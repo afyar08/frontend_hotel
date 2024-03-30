@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
             Text('Welcome!',
                 style: TextStyle(
                     fontSize: 40,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: Colors.blue[800]),
                 textAlign: TextAlign.left),
             Text(
@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
               style: TextStyle(fontSize: 30, color: Colors.blue[800]),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: 100),
+            SizedBox(height: 50),
             // ini yang tampilan login costumer
             GestureDetector(
               // ini pas pencet costomer
@@ -72,6 +72,7 @@ class _HomeState extends State<Home> {
                     boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1)]),
               ),
             ),
+            SizedBox(height: 20),
             // ini yang tampilan login Manajer
             GestureDetector(
               // ini pas pencet costomer
@@ -113,6 +114,7 @@ class _HomeState extends State<Home> {
                     boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1)]),
               ),
             ),
+            SizedBox(height: 20),
             // ini yang tampilan login Front Desk
             GestureDetector(
               // ini pas pencet costomer
