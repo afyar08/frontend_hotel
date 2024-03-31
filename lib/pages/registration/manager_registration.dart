@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/login/manager.dart';
 
 class ManagerRegistration extends StatefulWidget {
   const ManagerRegistration({Key? key}) : super(key: key);
@@ -181,14 +182,19 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Already a member? ',
+                    'Have an account? ',
                     style: TextStyle(
                       color: Colors.black,
                     ),
                   ),
                   InkWell(
                     onTap: () {
-                      // Tambahkan logika untuk menuju halaman login
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Manager(),
+                          ),
+                        );
                     },
                     child: Text(
                       'Log in',

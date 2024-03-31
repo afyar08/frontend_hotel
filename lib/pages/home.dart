@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
                     SizedBox(height: 20),
                     Container(
                       child: Text(
-                        'Channel Manager',
+                        'Manager',
                         style: TextStyle(
                             color: Colors.green[800],
                             fontWeight: FontWeight.bold),

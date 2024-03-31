@@ -11,6 +11,8 @@ class Manager extends StatefulWidget {
 class _ManagerState extends State<Manager> {
   final _formKey = GlobalKey<FormState>();
   String? _email, _password;
+  bool _isEmailFilled = false;
+  bool _isPasswordFilled = false;
 
   void _trySubmit() {
     final isValid = _formKey.currentState!.validate();
@@ -24,14 +26,14 @@ class _ManagerState extends State<Manager> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('FrontOfficePro'),
+        title: Text(''),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 100),
+            SizedBox(height: 10),
             Text(
               'Welcome!',
               style: TextStyle(
@@ -46,34 +48,38 @@ class _ManagerState extends State<Manager> {
               style: TextStyle(fontSize: 30, color: Colors.blue[800]),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: 100),
+            SizedBox(height: 50),
             // Existing content
-            GestureDetector(
-              onTap: () {
-                // Handle tap on existing content
-              },
-              child: Container(
-                child: Column(
-                  children: <Widget>[
-                    Image.asset('assets/images/network.png'),
-                    SizedBox(height: 20),
-                    Container(
-                      child: Text(
-                        'Manager',
-                        style: TextStyle(
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Image.asset('assets/images/network.png'),
+                  SizedBox(height: 20),
+                  Container(
+                    child: Text(
+                      'Manager',
+                      style: TextStyle(
                           color: Colors.green[800],
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        color: Colors.green[100],
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
+                          fontWeight: FontWeight.bold),
                     ),
-                  ],
-                ),
+                    padding: EdgeInsets.all(7), // jarak ke dalam
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                  )
+                ],
               ),
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+              alignment: Alignment.center,
+              width: 180,
+              height: 180,
+              decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  border: Border.all(
+                      width: 1.0, color: Colors.grey.withOpacity(0.5)),
+                  boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 1)]),
             ),
             // Login Form
             Form(
@@ -81,65 +87,136 @@ class _ManagerState extends State<Manager> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 16),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200], // Latar belakang field
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.grey.withOpacity(0.5), // Warna bayangan
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(
+                                0, 3), // Offset agar terlihat sedikit naik
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+                            labelStyle: TextStyle(
+                                color: Colors.grey[600]), // Warna label
+                            border: InputBorder.none, // Tidak ada border
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _isEmailFilled = value.isNotEmpty;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200], // Latar belakang field
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.grey.withOpacity(0.5), // Warna bayangan
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(
+                                0, 3), // Offset agar terlihat sedikit naik
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            labelStyle: TextStyle(
+                                color: Colors.grey[600]), // Warna label
+                            border: InputBorder.none, // Tidak ada border
+                          ),
+                          obscureText: true,
+                          onChanged: (value) {
+                            setState(() {
+                              _isPasswordFilled = value.isNotEmpty;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  TextButton(
+                    onPressed: (_isEmailFilled && _isPasswordFilled)
+                        ? _trySubmit
+                        : null,
+                    child: Container(
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                      width: 345,
+                      decoration: BoxDecoration(
+                        color: (_isEmailFilled && _isPasswordFilled)
+                            ? Colors.blue[800]
+                            : Colors
+                                .grey, // Mengubah warna tombol berdasarkan status checkbox
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   Text(
-                  'Sign in',
+                    'Create an account? ',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Enter your email',
-                      ),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            !value.contains('@')) {
-                          return 'Please enter a valid email address';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) => _email = value,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                      ),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.length < 6) {
-                          return 'Please enter a valid password (at least 6 characters)';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) => _password = value,
-                      obscureText: true,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: _trySubmit,
-                      child: Text('Login'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ManagerRegistration(),
+                          ),
+                        );
+                    },
                     child: Text(
-                      '',
+                      'Register now',
                       style: TextStyle(
-                        decoration: TextDecoration.underline,
+                        color: Colors.blue[
+                            600], // Mengubah warna teks menjadi biru biruan
+                        decoration:
+                            TextDecoration.underline, // Memberi garis bawah
                       ),
                     ),
                   ),
+                ],
+              ),
                 ],
               ),
             ),
