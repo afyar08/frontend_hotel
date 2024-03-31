@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/registration/manager_registration.dart'; // Import halaman ManagerRegistration
 
 class Manager extends StatefulWidget {
   const Manager({Key? key}) : super(key: key);
