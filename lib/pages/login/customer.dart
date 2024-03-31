@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/customer_registration.dart';
 
 class Customer extends StatefulWidget {
-  const Customer({super.key});
+  const Customer({Key? key}) : super(key: key);
 
   @override
   State<Customer> createState() => _CustomerState();
@@ -20,6 +21,10 @@ class _CustomerState extends State<Customer> {
       _formKey.currentState!.save();
       // handle login here
     }
+  }
+
+  void _forgotPassword() {
+    // Handle forgot password action, navigate to appropriate screen
   }
 
   @override
@@ -128,6 +133,28 @@ class _CustomerState extends State<Customer> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Forgotpassword(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 30),
                   TextButton(
                     onPressed: (_isEmailFilled && _isPasswordFilled)
@@ -154,36 +181,36 @@ class _CustomerState extends State<Customer> {
                     ),
                   ),
                   SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'New member? ',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CustomerRegistration(),
-                          ),
-                        );
-                    },
-                    child: Text(
-                      'Register now',
-                      style: TextStyle(
-                        color: Colors.blue[
-                            600], // Mengubah warna teks menjadi biru biruan
-                        decoration:
-                            TextDecoration.underline, // Memberi garis bawah
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'New member? ',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CustomerRegistration(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.blue[
+                                600], // Mengubah warna teks menjadi biru biruan
+                            decoration:
+                                TextDecoration.underline, // Memberi garis bawah
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
                 ],
               ),
             ),

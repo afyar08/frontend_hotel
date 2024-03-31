@@ -21,16 +21,16 @@ class _HomeState extends State<Home> {
             SizedBox(height: 100),
             Text('Welcome!',
                 style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 30,
                     fontWeight: FontWeight.w900,
                     color: Colors.blue[800]),
                 textAlign: TextAlign.left),
             Text(
               'to FrontOfficePro',
-              style: TextStyle(fontSize: 30, color: Colors.blue[800]),
+              style: TextStyle(fontSize: 20, color: Colors.blue[800]),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 30),
             // ini yang tampilan login costumer
             GestureDetector(
               // ini pas pencet costomer
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: <Widget>[
                     Image.asset('assets/images/receptionist.png'),
-                    SizedBox(height: 20),
+                    SizedBox(height: 18),
                     Container(
                       child: Text(
                         'Front Desk',

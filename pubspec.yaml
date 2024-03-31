@@ -64,6 +64,8 @@ flutter:
     - assets/images/network.png
     - assets/images/receptionist.png
     - assets/images/home.png
+    - assets/images/lock.png
+    - assets/images/approved.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

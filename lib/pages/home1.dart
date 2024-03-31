@@ -21,18 +21,18 @@ class Home1 extends StatelessWidget {
                 SizedBox(height: 100),
                 Text('Get Your Room.',
                     style: TextStyle(
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue[800]),
                     textAlign: TextAlign.left),
                 Text('Book Today.',
                     style: TextStyle(
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue[800]),
                     textAlign: TextAlign.left),
                 SizedBox(
-                  height: 550,
+                  height: 500,
                 ),
                 // button ges
                 TextButton(
@@ -50,7 +50,7 @@ class Home1 extends StatelessWidget {
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                       padding: EdgeInsets.fromLTRB(
-                          150, 20, 150, 20), // jarak ke dalam
+                          100, 20, 100, 20), // jarak ke dalam
                       decoration: BoxDecoration(
                         color: Colors.blue[800],
                         borderRadius: BorderRadius.all(Radius.circular(8)),

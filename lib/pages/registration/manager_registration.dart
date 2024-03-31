@@ -26,7 +26,7 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                     TextSpan(
                       text: 'Register!\n',
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                         color: Colors.blue[800],
                       ),
@@ -34,7 +34,7 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                     TextSpan(
                       text: 'your manager account.',
                       style: TextStyle(
-                        fontSize: 40,
+                        fontSize: 30,
                         color: Colors.blue[800],
                       ),
                     ),

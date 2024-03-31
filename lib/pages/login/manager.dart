@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/manager_registration.dart'; // Import halaman ManagerRegistration
 
 class Manager extends StatefulWidget {
@@ -22,6 +23,10 @@ class _ManagerState extends State<Manager> {
     }
   }
 
+  void _forgotPassword() {
+    // Handle forgot password action, navigate to appropriate screen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +38,11 @@ class _ManagerState extends State<Manager> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 10),
+            SizedBox(height: 2),
             Text(
               'Welcome!',
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue[800],
               ),
@@ -45,10 +50,10 @@ class _ManagerState extends State<Manager> {
             ),
             Text(
               'to FrontOfficePro',
-              style: TextStyle(fontSize: 30, color: Colors.blue[800]),
+              style: TextStyle(fontSize: 20, color: Colors.blue[800]),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             // Existing content
             Container(
               child: Column(
@@ -161,7 +166,29 @@ class _ManagerState extends State<Manager> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Forgotpassword(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.blue[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
                   TextButton(
                     onPressed: (_isEmailFilled && _isPasswordFilled)
                         ? _trySubmit
@@ -187,36 +214,36 @@ class _ManagerState extends State<Manager> {
                     ),
                   ),
                   SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Create an account? ',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ManagerRegistration(),
-                          ),
-                        );
-                    },
-                    child: Text(
-                      'Register now',
-                      style: TextStyle(
-                        color: Colors.blue[
-                            600], // Mengubah warna teks menjadi biru biruan
-                        decoration:
-                            TextDecoration.underline, // Memberi garis bawah
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Create an account? ',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ManagerRegistration(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Register now',
+                          style: TextStyle(
+                            color: Colors.blue[
+                                600], // Mengubah warna teks menjadi biru biruan
+                            decoration:
+                                TextDecoration.underline, // Memberi garis bawah
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
                 ],
               ),
             ),

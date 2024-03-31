@@ -36,7 +36,7 @@ class _FrontofficeState extends State<Frontoffice> {
             Text(
               'Welcome!',
               style: TextStyle(
-                fontSize: 40,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue[800],
               ),
@@ -44,16 +44,16 @@ class _FrontofficeState extends State<Frontoffice> {
             ),
             Text(
               'to FrontOfficePro',
-              style: TextStyle(fontSize: 30, color: Colors.blue[800]),
+              style: TextStyle(fontSize: 20, color: Colors.blue[800]),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             // Existing content
             Container(
               child: Column(
                 children: <Widget>[
                   Image.asset('assets/images/receptionist.png'),
-                  SizedBox(height: 20),
+                  SizedBox(height: 18),
                   Container(
                     child: Text(
                       'Front Desk',
