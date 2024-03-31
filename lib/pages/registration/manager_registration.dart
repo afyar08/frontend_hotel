@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/login/manager.dart';
 import 'dart:convert';
-import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
-
-final Logger logger = Logger();
+import 'package:frontend_hotel/pages/registration/kelola_manager.dart';
 
 class ManagerRegistration extends StatefulWidget {
   const ManagerRegistration({Key? key}) : super(key: key);
@@ -236,39 +234,5 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
         ),
       ),
     );
-  }
-}
-
-// sambung ke BE
-Future<void> registerManager(String nama, String email, String password) async {
-  final Uri uri = Uri.parse('http://127.0.0.1:8000/api/admin/create_manager');
-
-  try {
-    final response = await http.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'nama': nama,
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      // Registrasi berhasil
-      // nama.clear();
-      // email.clear();
-      // password.clear();
-      logger.d('Registrasi berhasil!');
-    } else {
-      // Gagal melakukan registrasi
-      logger.e('Registrasi gagal: ${response.statusCode}');
-      logger.e(response.body); // Tampilkan pesan kesalahan dari backend
-    }
-  } catch (e) {
-    // Tangani kesalahan selama proses HTTP request
-    logger.e('Kesalahan koneksi: $e');
   }
 }
