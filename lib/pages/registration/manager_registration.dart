@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/login/manager.dart';
+import 'dart:convert';
+import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
+
+final Logger logger = Logger();
 
 class ManagerRegistration extends StatefulWidget {
   const ManagerRegistration({Key? key}) : super(key: key);
@@ -9,6 +14,10 @@ class ManagerRegistration extends StatefulWidget {
 }
 
 class _ManagerRegistrationState extends State<ManagerRegistration> {
+  final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   bool _isChecked = false;
 
   @override
@@ -62,6 +71,8 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      //yang mengontrol inputan nama
+                      controller: _namaController,
                       decoration: InputDecoration(
                         labelText: 'Nama',
                         labelStyle:
@@ -92,6 +103,8 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      //yang mengontrol inputan email
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle:
@@ -122,6 +135,8 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      //yang mengontrol inputan password
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle:
@@ -154,7 +169,15 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
               TextButton(
                 onPressed: _isChecked
                     ? () {
-                        // Tambahkan logika untuk mengirimkan data registrasi
+                        //panggil BE
+                        registerManager(
+                          _namaController
+                              .text, // Mengambil nilai nama dari controller
+                          _emailController
+                              .text, // Mengambil nilai email dari controller
+                          _passwordController
+                              .text, // Mengambil nilai password dari controller
+                        );
                       }
                     : null,
                 child: Container(
@@ -190,11 +213,11 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
                   InkWell(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Manager(),
-                          ),
-                        );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Manager(),
+                        ),
+                      );
                     },
                     child: Text(
                       'Log in',
@@ -213,5 +236,39 @@ class _ManagerRegistrationState extends State<ManagerRegistration> {
         ),
       ),
     );
+  }
+}
+
+// sambung ke BE
+Future<void> registerManager(String nama, String email, String password) async {
+  final Uri uri = Uri.parse('http://127.0.0.1:8000/api/admin/create_manager');
+
+  try {
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'nama': nama,
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // Registrasi berhasil
+      // nama.clear();
+      // email.clear();
+      // password.clear();
+      logger.d('Registrasi berhasil!');
+    } else {
+      // Gagal melakukan registrasi
+      logger.e('Registrasi gagal: ${response.statusCode}');
+      logger.e(response.body); // Tampilkan pesan kesalahan dari backend
+    }
+  } catch (e) {
+    // Tangani kesalahan selama proses HTTP request
+    logger.e('Kesalahan koneksi: $e');
   }
 }
