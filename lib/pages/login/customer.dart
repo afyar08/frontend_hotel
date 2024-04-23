@@ -175,7 +175,7 @@ class _CustomerState extends State<Customer> {
                         color: (_isEmailFilled && _isPasswordFilled)
                             ? Colors.blue[800]
                             : Colors
-                                .grey, // Mengubah warna tombol berdasarkan status checkbox
+                                .grey, // Mengubah warna tombol berdasarkan status pada checkbox
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                     ),
