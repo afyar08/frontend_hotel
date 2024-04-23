@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
+
+import '../frontdesk/frontdesk_dashboard.dart';
 
 class Frontoffice extends StatefulWidget {
   const Frontoffice({Key? key}) : super(key: key);
@@ -9,15 +13,42 @@ class Frontoffice extends StatefulWidget {
 
 class _FrontofficeState extends State<Frontoffice> {
   final _formKey = GlobalKey<FormState>();
-  String? _email, _password;
+  String? _email, _password, _errorMessage;
   bool _isEmailFilled = false;
   bool _isPasswordFilled = false;
 
-  void _trySubmit() {
+  void _trySubmit() async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
-      // handle login here
+      try {
+        Response response = await post(
+            Uri.parse(
+                'http://127.0.0.1:8000/api/receptionist/auth_receptionist'),
+            body: {'username': _email, 'password': _password});
+
+        if (response.statusCode == 200) {
+          var data = jsonDecode(response.body.toString());
+          // print(data.success['token']);
+          print('Login successfully');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    FrontDeskDashboard()), // Replace NextScreen() with the name of the screen you want to navigate to
+          );
+        } else if (response.statusCode == 401) {
+          setState(() {
+            _errorMessage = ('Username or Password Wrong!');
+          });
+        } else {
+          setState(() {
+            _errorMessage = "error";
+          });
+        }
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 
@@ -109,11 +140,14 @@ class _FrontofficeState extends State<Frontoffice> {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: 'Username',
                             labelStyle: TextStyle(
                                 color: Colors.grey[600]), // Warna label
                             border: InputBorder.none, // Tidak ada border
                           ),
+                          onSaved: (value) {
+                            _email = value; // Save the value to _email variable
+                          },
                           onChanged: (value) {
                             setState(() {
                               _isEmailFilled = value.isNotEmpty;
@@ -151,6 +185,10 @@ class _FrontofficeState extends State<Frontoffice> {
                             border: InputBorder.none, // Tidak ada border
                           ),
                           obscureText: true,
+                          onSaved: (value) {
+                            _password =
+                                value; // Save the value to _email variable
+                          },
                           onChanged: (value) {
                             setState(() {
                               _isPasswordFilled = value.isNotEmpty;
@@ -158,6 +196,14 @@ class _FrontofficeState extends State<Frontoffice> {
                           },
                         ),
                       ),
+                    ),
+                  ),
+                  if (_errorMessage != null)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 22, 0, 0),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red),
                     ),
                   ),
                   SizedBox(height: 30),
@@ -186,11 +232,10 @@ class _FrontofficeState extends State<Frontoffice> {
                     ),
                   ),
                   SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                ],
-              ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [],
+                  ),
                 ],
               ),
             ),
