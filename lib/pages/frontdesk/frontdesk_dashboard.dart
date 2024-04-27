@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/frontdesk/guest_list.dart';
+import 'package:frontend_hotel/pages/frontdesk/home.dart';
+import 'package:frontend_hotel/pages/frontdesk/logout.dart';
+import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
 
 void main() => runApp(const FrontDeskDashboard());
 
@@ -30,22 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: School',
-      style: optionStyle,
-    ),
+    Home(),
+    NewBooking(),
+    GuestList(),
+    Logout(),
   ];
 
   void _onItemTapped(int index) {
@@ -73,9 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('Drawer Header'),
+              child: Text('FrontOfficePro'),
             ),
             ListTile(
+              leading: Icon(Icons.home_filled),
               title: const Text('Home'),
               selected: _selectedIndex == 0,
               onTap: () {
@@ -86,7 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              title: const Text('Business'),
+              leading: Icon(Icons.inventory),
+              title: const Text('New Booking'),
               selected: _selectedIndex == 1,
               onTap: () {
                 // Update the state of the app
@@ -96,7 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              title: const Text('School'),
+              leading: Icon(Icons.calendar_today),
+              title: const Text('Guest List'),
               selected: _selectedIndex == 2,
               onTap: () {
                 // Update the state of the app
@@ -106,7 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              title: const Text('School'),
+              leading: Icon(Icons.logout),
+              title: const Text('Logout'),
               selected: _selectedIndex == 3,
               onTap: () {
                 // Update the state of the app
