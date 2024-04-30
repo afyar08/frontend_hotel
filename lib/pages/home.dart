@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
 import './login/customer.dart';
-import './login/manager.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
