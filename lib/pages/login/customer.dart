@@ -37,9 +37,9 @@ class _CustomerState extends State<Customer> {
     if (response.statusCode == 200) {
       // Jika login berhasil, simpan token akses dan tampilkan pemberitahuan
       Map<String, dynamic> responseData = jsonDecode(response.body);
-      // String token = responseData['token'];
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-      // await prefs.setString('token', token);
+      String token = responseData['token'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
 
       // Simpan token akses di sini (misalnya, menggunakan shared preferences atau provider)
       // Tampilkan pemberitahuan login berhasil

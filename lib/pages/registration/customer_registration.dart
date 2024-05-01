@@ -34,12 +34,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registrasi berhasil!'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      _showDialog('Registrasi Berhasil', 'Registrasi berhasil!');
     } else if (response.statusCode == 422) {
       // Registrasi gagal karena validasi
       final jsonResponse = json.decode(response.body);
@@ -55,21 +50,31 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
         // Jika terdapat pesan kesalahan umum, gunakan pesan tersebut
         errorText = errorMessage;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorText),
-          duration: Duration(seconds: 5),
-        ),
-      );
+      _showDialog('Registrasi Gagal', errorText);
     } else {
       // Registrasi gagal karena alasan lain
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Registrasi gagal!'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      _showDialog('Registrasi Gagal', 'Registrasi gagal! Silakan coba lagi.');
     }
+  }
+
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
