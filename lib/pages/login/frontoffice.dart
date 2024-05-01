@@ -29,27 +29,62 @@ class _FrontofficeState extends State<Frontoffice> {
 
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body.toString());
-          // print(data.success['token']);
           print('Login successfully');
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    FrontDeskDashboard()), // Replace NextScreen() with the name of the screen you want to navigate to
+              builder: (context) => FrontDeskDashboard(),
+            ),
           );
         } else if (response.statusCode == 401) {
           setState(() {
-            _errorMessage = ('Username or Password Wrong!');
+            _errorMessage = 'Username or Password Wrong!';
           });
+          _showErrorDialog(_errorMessage ?? '');
         } else {
           setState(() {
-            _errorMessage = "error";
+            _errorMessage = 'An error occurred while trying to log in.';
           });
+          _showErrorDialog(_errorMessage ?? '');
         }
       } catch (e) {
         print(e.toString());
       }
     }
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Login Failed'),
+          content: Row(
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+              ),
+              SizedBox(width: 8),
+              Text(
+                errorMessage,
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -199,13 +234,13 @@ class _FrontofficeState extends State<Frontoffice> {
                     ),
                   ),
                   if (_errorMessage != null)
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20, 22, 0, 0),
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(color: Colors.red),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 22, 0, 0),
+                      child: Text(
+                        _errorMessage!,
+                        style: TextStyle(color: Colors.red),
+                      ),
                     ),
-                  ),
                   SizedBox(height: 30),
                   TextButton(
                     onPressed: (_isEmailFilled && _isPasswordFilled)
