@@ -15,8 +15,8 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
   String _kategori = 'ON';
   TextEditingController _namaController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
   TextEditingController _noTelpController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   void _register() async {
     final response = await http.post(
@@ -44,11 +44,21 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
       // Registrasi gagal karena validasi
       final jsonResponse = json.decode(response.body);
       final errorMessage = jsonResponse['message'];
+      final validationErrors = jsonResponse['errors'];
+      String errorText = 'Registrasi gagal!';
+      if (validationErrors != null) {
+        // Jika terdapat kesalahan validasi yang spesifik, tambahkan pesan ke errorText
+        validationErrors.forEach((key, value) {
+          errorText += '\n$key: $value';
+        });
+      } else if (errorMessage != null) {
+        // Jika terdapat pesan kesalahan umum, gunakan pesan tersebut
+        errorText = errorMessage;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(errorMessage != null ? errorMessage : 'Registrasi gagal!'),
-          duration: Duration(seconds: 3),
+          content: Text(errorText),
+          duration: Duration(seconds: 5),
         ),
       );
     } else {
@@ -113,6 +123,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _namaController,
                       decoration: InputDecoration(
                         labelText: 'Nama',
                         labelStyle:
@@ -143,6 +154,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle:
@@ -204,6 +216,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle:
