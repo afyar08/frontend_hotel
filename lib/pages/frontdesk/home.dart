@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'detail_room.dart';  // Pastikan ini mengarah ke file detail_room.dart yang benar
+import 'detail_room.dart'; // Pastikan ini mengarah ke file detail_room.dart yang benar
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -47,18 +47,47 @@ class _HomeState extends State<Home> {
             child: ListView.builder(
               itemCount: _rooms.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_rooms[index]),
-                  onTap: () {
-                    // Navigasi ke halaman detail kamar
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailRoom(roomName: _rooms[index]),
+                return GestureDetector(
+                  onTap: (){},
+                  child: Card(
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1,
+                        child: Image.asset(
+                          'assets/images/dash.png',
+                        ),
                       ),
-                    );
-                  },
+                      Expanded(
+                        flex: 2,
+                        child: ListTile(
+                          title: Text('Three-line ListTile'),
+                          subtitle: Text(
+                              'A sufficiently long subtitle warrants three lines.'),
+                          trailing: Icon(Icons.more_vert),
+                          isThreeLine: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 );
+                // return Card(
+                //   child: ListTile(
+                //     leading: ,
+                //     title: Text(_rooms[index]),
+                //     onTap: () {
+                //       // Navigasi ke halaman detail kamar
+                //       Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //           builder: (context) =>
+                //               DetailRoom(roomName: _rooms[index]),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // );
               },
             ),
           ),

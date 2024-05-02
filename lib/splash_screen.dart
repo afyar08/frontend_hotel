@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_hotel/pages/frontdesk/detail_room.dart';
-import 'package:frontend_hotel/pages/home.dart';
+import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/home1.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
 
@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       //ini atur waktu gesss buat splashnyaaaaaaa
       Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => const Home1())); //Home()
+          .pushReplacement(MaterialPageRoute(builder: (_) => const Home())); //Home1()
     });
   }
 
