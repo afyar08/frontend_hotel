@@ -42,20 +42,93 @@ class _DetailRoomState extends State<DetailRoom> {
                     icon: Icons.free_breakfast_outlined,
                     label: 'Free Breakfast',
                     spaceWidth: 10.0),
-                FeatureItem(icon: Icons.star, label: '5.0', spaceWidth: 10.0),
-                // Add more FeatureItem widgets for additional features
               ],
             ),
           ),
           // Description of the room
           Container(
-            padding: EdgeInsets.all(16), // Add some padding around the text
-            child: Text(
-              '2 Twin Classic',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.start,
-            ),
-          ),
+              padding: EdgeInsets.all(16), // Add some padding around the text
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        '2 Twin Classic',
+                        style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.start,
+                      ),
+                      Text(
+                        'IDR 2.000.000/night',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.start,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8, ),
+                  Text('Dua ruangan dengan fasilitas kolam pribadi.'),
+                  SizedBox(height: 18, ),
+                  Text(
+                    'Description', 
+                    style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start,
+                    ),
+                  SizedBox(height: 8, ),
+                  Text(
+                    '2 Twin Classic adalah salah satu fasilitas unggulan kami yang menyediakan pemandangan serta fasilitas yang membuat nyaman, disediakan dengan dua buah kasur dalam satu kamar.'
+                    ),
+                  SizedBox(height: 18, ),
+                  Text(
+                    'Preview',
+                    style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.start,
+                    ),
+                    Row( 
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Container(
+                          child: Image.asset('assets/images/prv.png'),
+                        ),
+                        Container(
+                          child: Image.asset('assets/images/prv2.png'),
+                        ),
+                        Container(
+                          child: Image.asset('assets/images/prv3.png'),
+                        )
+                      ],
+                    ),
+
+                    SizedBox(height: 50),
+                    TextButton(
+                  //buat next
+                    onPressed: () {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => ()),
+                      // );
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Booking Now',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      
+                      padding: EdgeInsets.fromLTRB(
+                          100, 20, 100, 20), // jarak ke dalam
+                      decoration: BoxDecoration(
+                        color: Colors.blue[800],
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ))
+                ],
+              )),
         ],
       ),
     );
