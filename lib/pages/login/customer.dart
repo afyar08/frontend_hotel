@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/customer_registration.dart';
+import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
 
 class Customer extends StatefulWidget {
   const Customer({Key? key}) : super(key: key);
@@ -19,12 +20,25 @@ class _CustomerState extends State<Customer> {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
-      // handle login here
+      // Di sini Anda akan mengecek kredensial dengan backend atau autentikasi
+      // Jika login berhasil, arahkan ke halaman CustomerDashboard
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CustomerDashboard(), // Navigasi ke halaman CustomerDashboard
+        ),
+      );
     }
   }
 
   void _forgotPassword() {
     // Handle forgot password action, navigate to appropriate screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Forgotpassword(),
+      ),
+    );
   }
 
   @override
@@ -138,14 +152,7 @@ class _CustomerState extends State<Customer> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Forgotpassword(),
-                            ),
-                          );
-                        },
+                        onPressed: _forgotPassword,
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
