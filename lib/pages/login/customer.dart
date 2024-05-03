@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/customer_registration.dart';
-import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
 
 class Customer extends StatefulWidget {
   const Customer({Key? key}) : super(key: key);
@@ -13,6 +12,10 @@ class Customer extends StatefulWidget {
 class _CustomerState extends State<Customer> {
   final _formKey = GlobalKey<FormState>();
   String? _email, _password;
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
   bool _isEmailFilled = false;
   bool _isPasswordFilled = false;
 
@@ -20,14 +23,7 @@ class _CustomerState extends State<Customer> {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
-      // Di sini Anda akan mengecek kredensial dengan backend atau autentikasi
-      // Jika login berhasil, arahkan ke halaman CustomerDashboard
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CustomerDashboard(), // Navigasi ke halaman CustomerDashboard
-        ),
-      );
+      // handle login here
     }
   }
 
@@ -95,6 +91,7 @@ class _CustomerState extends State<Customer> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextFormField(
+                          controller: _emailController,
                           decoration: InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(
@@ -131,6 +128,7 @@ class _CustomerState extends State<Customer> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: TextFormField(
+                          controller: _passwordController,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: TextStyle(
@@ -164,9 +162,8 @@ class _CustomerState extends State<Customer> {
                   ),
                   SizedBox(height: 30),
                   TextButton(
-                    onPressed: (_isEmailFilled && _isPasswordFilled)
-                        ? _trySubmit
-                        : null,
+                    onPressed:
+                        (_isEmailFilled && _isPasswordFilled) ? _login : null,
                     child: Container(
                       child: Text(
                         'Login',

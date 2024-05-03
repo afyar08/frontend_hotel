@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/login/customer.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CustomerRegistration extends StatefulWidget {
   const CustomerRegistration({Key? key}) : super(key: key);
@@ -10,6 +12,70 @@ class CustomerRegistration extends StatefulWidget {
 
 class _CustomerRegistrationState extends State<CustomerRegistration> {
   bool _isChecked = false;
+  String _kategori = 'ON';
+  TextEditingController _namaController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _noTelpController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  void _register() async {
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/guest/register'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'nama': _namaController.text,
+        'email': _emailController.text,
+        'no_telp': _noTelpController.text,
+        'password': _passwordController.text,
+        'kategori': _kategori,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      _showDialog('Registrasi Berhasil', 'Registrasi berhasil!');
+    } else if (response.statusCode == 422) {
+      // Registrasi gagal karena validasi
+      final jsonResponse = json.decode(response.body);
+      final errorMessage = jsonResponse['message'];
+      final validationErrors = jsonResponse['errors'];
+      String errorText = 'Registrasi gagal!';
+      if (validationErrors != null) {
+        // Jika terdapat kesalahan validasi yang spesifik, tambahkan pesan ke errorText
+        validationErrors.forEach((key, value) {
+          errorText += '\n$key: $value';
+        });
+      } else if (errorMessage != null) {
+        // Jika terdapat pesan kesalahan umum, gunakan pesan tersebut
+        errorText = errorMessage;
+      }
+      _showDialog('Registrasi Gagal', errorText);
+    } else {
+      // Registrasi gagal karena alasan lain
+      _showDialog('Registrasi Gagal', 'Registrasi gagal! Silakan coba lagi.');
+    }
+  }
+
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +128,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _namaController,
                       decoration: InputDecoration(
                         labelText: 'Nama',
                         labelStyle:
@@ -92,6 +159,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         labelStyle:
@@ -122,6 +190,38 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TextFormField(
+                      controller:
+                          _noTelpController, // Gunakan controller untuk field nomor telepon
+                      decoration: InputDecoration(
+                        labelText: 'Nomor Telepon', // Label field
+                        labelStyle:
+                            TextStyle(color: Colors.grey[600]), // Warna label
+                        border: InputBorder.none, // Tidak ada border
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200], // Latar belakang field
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5), // Warna bayangan
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset:
+                            Offset(0, 3), // Offset agar terlihat sedikit naik
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         labelStyle:
@@ -155,6 +255,7 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                 onPressed: _isChecked
                     ? () {
                         // Tambahkan logika untuk mengirimkan data registrasi
+                        _register(); // Memanggil fungsi _register() saat tombol ditekan
                       }
                     : null,
                 child: Container(
@@ -190,11 +291,11 @@ class _CustomerRegistrationState extends State<CustomerRegistration> {
                   InkWell(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Customer(),
-                          ),
-                        );
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Customer(),
+                        ),
+                      );
                     },
                     child: Text(
                       'Log in',
