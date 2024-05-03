@@ -4,6 +4,7 @@ import 'package:frontend_hotel/pages/frontdesk/detail_room.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/home1.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
+import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,9 +21,12 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      //ini atur waktu gesss buat splashnyaaaaaaa
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => const Home())); //Home1()
+      // //ini atur waktu gesss buat splashnyaaaaaaa
+      // Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (_) => const Home())); //Home1()
+      // Setelah delay, navigasi ke GuestList
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const GuestList()));
     });
   }
 
