@@ -162,8 +162,7 @@ class _CustomerState extends State<Customer> {
                   ),
                   SizedBox(height: 30),
                   TextButton(
-                    onPressed:
-                        (_isEmailFilled && _isPasswordFilled) ? _login : null,
+                    onPressed: (_isEmailFilled && _isPasswordFilled) ? _trySubmit : null,
                     child: Container(
                       child: Text(
                         'Login',
@@ -178,8 +177,7 @@ class _CustomerState extends State<Customer> {
                       decoration: BoxDecoration(
                         color: (_isEmailFilled && _isPasswordFilled)
                             ? Colors.blue[800]
-                            : Colors
-                                .grey, // Mengubah warna tombol berdasarkan status pada checkbox
+                            : Colors.grey, // Mengubah warna tombol berdasarkan status pada checkbox
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/Individual.dart';
 import 'package:frontend_hotel/pages/frontdesk/detail_room.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/home1.dart';
@@ -22,11 +23,11 @@ class _SplashScreenState extends State<SplashScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
       // //ini atur waktu gesss buat splashnyaaaaaaa
-      // Navigator.of(context).pushReplacement(
-      //     MaterialPageRoute(builder: (_) => const Home())); //Home1()
-      // Setelah delay, navigasi ke GuestList
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const GuestList()));
+          MaterialPageRoute(builder: (_) => const IndividualBooking())); //Home1()
+      // Setelah delay, navigasi ke GuestList
+      // Navigator.of(context).pushReplacement(
+      //     MaterialPageRoute(builder: (_) => const GuestList()));
     });
   }
 
