@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/customer_registration.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Customer extends StatefulWidget {
   const Customer({Key? key}) : super(key: key);
@@ -22,91 +19,22 @@ class _CustomerState extends State<Customer> {
   bool _isEmailFilled = false;
   bool _isPasswordFilled = false;
 
-  Future<void> _login() async {
-    final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/guest/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, String>{
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Jika login berhasil, simpan token akses dan tampilkan pemberitahuan
-      Map<String, dynamic> responseData = jsonDecode(response.body);
-      String token = responseData['token'];
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', token);
-
-      // Simpan token akses di sini (misalnya, menggunakan shared preferences atau provider)
-      // Tampilkan pemberitahuan login berhasil
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Login Success'),
-            content: Text('You have successfully logged in!'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    } else if (response.statusCode == 401) {
-      // Jika status code adalah 401 (Unauthorized), tampilkan pesan kesalahan dari server
-      final jsonResponse = json.decode(response.body);
-      final errorMessage = jsonResponse['message'];
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Login Failed'),
-            content: Text(
-                errorMessage ?? 'Invalid email or password. Please try again.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Jika status code bukan 200 atau 401, tampilkan pesan umum
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Login Failed'),
-            content: Text(
-                'An error occurred while trying to log in. Please try again later.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+  void _trySubmit() {
+    final isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      _formKey.currentState!.save();
+      // handle login here
     }
   }
 
   void _forgotPassword() {
     // Handle forgot password action, navigate to appropriate screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Forgotpassword(),
+      ),
+    );
   }
 
   @override
@@ -222,14 +150,7 @@ class _CustomerState extends State<Customer> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Forgotpassword(),
-                            ),
-                          );
-                        },
+                        onPressed: _forgotPassword,
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
@@ -241,8 +162,7 @@ class _CustomerState extends State<Customer> {
                   ),
                   SizedBox(height: 30),
                   TextButton(
-                    onPressed:
-                        (_isEmailFilled && _isPasswordFilled) ? _login : null,
+                    onPressed: (_isEmailFilled && _isPasswordFilled) ? _trySubmit : null,
                     child: Container(
                       child: Text(
                         'Login',
@@ -257,8 +177,7 @@ class _CustomerState extends State<Customer> {
                       decoration: BoxDecoration(
                         color: (_isEmailFilled && _isPasswordFilled)
                             ? Colors.blue[800]
-                            : Colors
-                                .grey, // Mengubah warna tombol berdasarkan status pada checkbox
+                            : Colors.grey, // Mengubah warna tombol berdasarkan status pada checkbox
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                     ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_hotel/pages/password/recover.dart'; // Pastikan Anda mengimpor recover.dart
+import 'package:frontend_hotel/pages/home.dart';
+import 'package:frontend_hotel/pages/password/recover.dart';
+import 'package:frontend_hotel/pages/home.dart';
 
 class Forgotpassword extends StatefulWidget {
   const Forgotpassword({Key? key}) : super(key: key);
@@ -120,7 +122,12 @@ class _ForgotpasswordState extends State<Forgotpassword> {
                 ),
                 InkWell(
                   onTap: () {
-                    // Implement logic for navigating to login page
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Home(),
+                            ),
+                          );
                   },
                   child: Text(
                     'Log in',
