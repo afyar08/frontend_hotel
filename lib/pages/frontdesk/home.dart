@@ -25,6 +25,32 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+      leading: IconButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        icon: Icon(
+          Icons.arrow_back,
+          size: 30,
+        ),
+      ),
+      title: Text(
+        'Home',
+        style: TextStyle(
+          fontFamily: 'Jakarta',
+          fontWeight: FontWeight.bold, // Medium
+          fontSize: 18, // Ukuran font yang Anda inginkan
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.list_rounded),
+        )
+      ],
+    ),
       body: Column(
         children: <Widget>[
           TableCalendar(

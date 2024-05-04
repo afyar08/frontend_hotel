@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import untuk menggunakan TextInputFormatter
-import 'package:frontend_hotel/pages/frontdesk/home.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
 
 class IndividualBooking extends StatefulWidget {
   const IndividualBooking({Key? key}) : super(key: key);
@@ -31,27 +31,50 @@ class _IndividualBookingState extends State<IndividualBooking> {
   String _cardNumber = ''; // Initialize the card number field
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Individual Booking'),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _buildDropdown(),
-              ),
-            ],
-          ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      leading: IconButton(
+        onPressed: () {
+         Navigator.of(context).pop();
+        },
+        icon: Icon(
+          Icons.arrow_back,
+          size: 30,
         ),
       ),
-    );
-  }
+      title: Text(
+        'Individual Booking',
+        style: TextStyle(
+          fontFamily: 'Jakarta',
+          fontWeight: FontWeight.bold, // Medium
+          fontSize: 18, // Ukuran font yang Anda inginkan
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.list_rounded),
+        )
+      ],
+    ),
+    body: SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _buildDropdown(),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   Widget _buildDropdown() {
     return Column(
@@ -503,7 +526,7 @@ class _IndividualBookingState extends State<IndividualBooking> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Home()),
+                        MaterialPageRoute(builder: (context) => BookingSummary()),
                       );
                     },
                     child: Container(
