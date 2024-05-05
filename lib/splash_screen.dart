@@ -6,6 +6,8 @@ import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/home1.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
 import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
+import 'package:frontend_hotel/pages/frontdesk/home.dart' as homeDash;
+import 'package:frontend_hotel/pages/frontdesk/frontdesk_dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       // //ini atur waktu gesss buat splashnyaaaaaaa
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const IndividualBooking())); //Home1()
+          MaterialPageRoute(builder: (_) => const FrontDeskDashboard())); //Home1()
       // Setelah delay, navigasi ke GuestList
       // Navigator.of(context).pushReplacement(
       //     MaterialPageRoute(builder: (_) => const GuestList()));
