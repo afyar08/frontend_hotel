@@ -28,8 +28,8 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const Home1())); //Home1()
       // Setelah delay, navigasi ke GuestList
-      // Navigator.of(context).pushReplacement(
-      //     MaterialPageRoute(builder: (_) => const GuestList()));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const GuestList()));
     });
   }
 
