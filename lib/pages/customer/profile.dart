@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
+import 'package:frontend_hotel/pages/customer/my_booking.dart';
 
 class ProfilePage1 extends StatelessWidget {
   const ProfilePage1({Key? key}) : super(key: key);
@@ -8,7 +9,7 @@ class ProfilePage1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar( 
+      appBar: AppBar(
         title: Text(
           'Profile',
           style: TextStyle(
@@ -18,6 +19,7 @@ class ProfilePage1 extends StatelessWidget {
           ),
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false, // Menghilangkan tombol back
       ),
       body: Column(
         children: [
@@ -30,8 +32,9 @@ class ProfilePage1 extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 16),
                     Text(
-                      "Richie Lorie",
+                      "Afyar Siti",
                       style: Theme.of(context)
                           .textTheme
                           .headline6
@@ -67,18 +70,23 @@ class ProfilePage1 extends StatelessWidget {
         ],
         initialActiveIndex: 2,
         onTap: (int index) {
-          if (index == 0) { // Ketika ikon "Home" ditekan
+          if (index == 0) {
+            // When the "Home" icon is tapped
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => CustomerDashboard()),
             );
-          } else if (index == 2) { // Ketika ikon "Profile" ditekan
-            Navigator.push(
+          } else if (index == 1) {
+            // When the "My Booking" icon is tapped
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ProfilePage1()),
+              MaterialPageRoute(builder: (context) => MyBooking()),
             );
+          } else if (index == 2) {
+            // When the "Profile" icon is tapped (current page)
+            // Do nothing as we're already on the ProfilePage1
           } else {
-            // Tindakan lainnya
+            // Other actions
           }
         },
       ),
@@ -90,9 +98,9 @@ class _ProfileInfo extends StatelessWidget {
   const _ProfileInfo({Key? key}) : super(key: key);
 
   final List<ProfileInfoItem> _items = const [
-    ProfileInfoItem("Richie Lorie", Icons.person),
-    ProfileInfoItem("richie.lorie@example.com", Icons.email),
-    ProfileInfoItem("+1234567890", Icons.phone),
+    ProfileInfoItem("Afyar Siti", Icons.person),
+    ProfileInfoItem("afyarsiti@gmail.com", Icons.email),
+    ProfileInfoItem("0812345678", Icons.phone),
   ];
 
   @override
@@ -101,33 +109,31 @@ class _ProfileInfo extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 400),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: _items
-            .map((item) => _singleItem(context, item))
-            .toList(),
+        children: _items.map((item) => _singleItem(context, item)).toList(),
       ),
     );
   }
 
   Widget _singleItem(BuildContext context, ProfileInfoItem item) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      children: [
-        Icon(
-          item.icon,
-          size: 30,
-          color: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Icon(
+              item.icon,
+              size: 30,
+              color: Theme.of(context).primaryColor,
+            ),
+            SizedBox(width: 5),
+            Text(
+              item.value,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
-        SizedBox(width: 16),
-        Text(
-          item.value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 }
 
 class ProfileInfoItem {
@@ -146,7 +152,7 @@ class _TopPortion extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         Container(
-          margin: const EdgeInsets.only(bottom: 100),
+          margin: const EdgeInsets.only(bottom: 50),
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   begin: Alignment.bottomCenter,

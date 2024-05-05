@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:frontend_hotel/pages/customer/profile.dart';
+import 'package:frontend_hotel/pages/customer/profile.dart'; // Impor file profile.dart
 import 'package:frontend_hotel/pages/customer/my_booking.dart';
-
 
 class CustomerDashboard extends StatefulWidget {
   @override
@@ -12,25 +11,25 @@ class CustomerDashboard extends StatefulWidget {
 class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
 
+  // Ganti teks menjadi instance dari class ProfilePage1
   final List<Widget> _tabs = [
-    Center(child: Text('Home', style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.bold))),
-    Center(child: Text('My Booking', style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.bold))),
-    Center(child: Text('Profile', style: TextStyle(fontFamily: 'Jakarta', fontWeight: FontWeight.bold))),
+    Center(
+        child: Text('Home',
+            style: TextStyle(
+                fontFamily: 'Jakarta', fontWeight: FontWeight.bold))),
+    Center(
+        child: Text('My Booking',
+            style: TextStyle(
+                fontFamily: 'Jakarta', fontWeight: FontWeight.bold))),
+    Center(
+        child: ProfilePage1(), // Ganti teks menjadi instance dari class ProfilePage1
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            size: 30,
-          ),
-        ),
         title: Text(
           'Home',
           style: TextStyle(
@@ -40,12 +39,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.list_rounded),
-          )
-        ],
+        automaticallyImplyLeading: false, // Menghilangkan tombol back
       ),
       body: _tabs[_currentIndex],
       bottomNavigationBar: ConvexAppBar(
@@ -60,7 +54,12 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
         ],
         initialActiveIndex: _currentIndex,
         onTap: (int index) {
-          if (index == 2) { // Ketika ikon "Profile" ditekan
+          if (index == 1) { // When "My Booking" icon is tapped
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyBooking()),
+            );
+          } else if (index == 2) { // When "Profile" icon is tapped
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ProfilePage1()),
