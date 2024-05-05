@@ -25,22 +25,23 @@ class _GuestListState extends State<GuestList> {
   TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   late List<Guest> _initialGuests;
+  bool _isSearching = false;
 
   // Data dummy untuk daftar tamu
   List<Guest> _guests = [
-    Guest('John Doe', '101', '2 Twin Classic', 'BOOK ID : 12345', 'reserved',
+    Guest('John Doe', '101', '2 Twin Classic', '12345', 'reserved',
         DateTime(2024, 5, 1), DateTime(2024, 5, 2)),
-    Guest('Jane Smith', '102', 'King Suite', 'BOOK ID : 54321', 'check in',
+    Guest('Jane Smith', '102', 'King Suite', '54321', 'check in',
         DateTime(2024, 5, 2), DateTime(2024, 5, 3)),
-    Guest('Alice Johnson', '103', 'Double Room', 'BOOK ID : 98765', 'reserved',
+    Guest('Alice Johnson', '103', 'Double Room', '98765', 'reserved',
         DateTime(2024, 5, 3), DateTime(2024, 5, 4)),
-    Guest('Bob Brown', '104', 'Standard Room', 'BOOK ID : 13579', 'check out',
+    Guest('Bob Brown', '104', 'Standard Room', '13579', 'check out',
         DateTime(2024, 5, 6), DateTime(2024, 5, 7)),
-    Guest('Emma Lee', '105', '2 Twin Classic', 'BOOK ID : 24680', 'reserved',
+    Guest('Emma Lee', '105', '2 Twin Classic', '24680', 'reserved',
         DateTime(2024, 5, 7), DateTime(2024, 5, 8)),
-    Guest('Michael Davis', '106', 'King Suite', 'BOOK ID : 11223', 'check in',
+    Guest('Michael Davis', '106', 'King Suite', '11223', 'check in',
         DateTime(2024, 5, 8), DateTime(2024, 5, 9)),
-    Guest('Sarah Wilson', '107', 'Double Room', 'BOOK ID : 33445', 'check out',
+    Guest('Sarah Wilson', '107', 'Double Room', '33445', 'check out',
         DateTime(2024, 5, 5), DateTime(2024, 5, 10)),
   ];
 
@@ -56,12 +57,25 @@ class _GuestListState extends State<GuestList> {
   void _onDatePressed(DateTime selectedDate) {
     setState(() {
       _selectedDate = selectedDate;
-      // Memfilter daftar tamu sesuai dengan tanggal yang dipilih
-      _guests.clear();
-      _guests.addAll(_initialGuests.where((guest) =>
-          (_selectedDate!.isAfter(guest.checkInDate) ||
-              _selectedDate!.isAtSameMomentAs(guest.checkInDate)) &&
-          _selectedDate!.isBefore(guest.checkOutDate)));
+      _searchController.clear();
+      _isSearching = false;
+
+      if (_selectedDate != null) {
+        // Mengatur daftar tamu yang akan di-filter
+        List<Guest> filteredGuests = _initialGuests
+            .where((guest) =>
+                (_selectedDate!.isAtSameMomentAs(guest.checkInDate) ||
+                    _selectedDate!.isAtSameMomentAs(guest.checkOutDate)))
+            .toList();
+
+        // Menampilkan daftar tamu yang telah difilter
+        _guests.clear();
+        _guests.addAll(filteredGuests);
+      } else {
+        // Jika tanggal tidak dipilih, tampilkan semua tamu
+        _guests.clear();
+        _guests.addAll(_initialGuests);
+      }
     });
   }
 
@@ -129,29 +143,42 @@ class _GuestListState extends State<GuestList> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
+              onTap: () {
+                setState(() {
+                  _selectedDate =
+                      null; // Set _selectedDate menjadi null saat field pencarian ditekan
+                  _guests.clear(); // Kosongkan _guests
+                  _guests.addAll(
+                      _initialGuests); // Isi _guests dengan semua data tamu awal
+                });
+              },
               onChanged: (value) {
                 setState(() {
                   _searchText = value.toLowerCase();
+                  _isSearching = true; // Mulai melakukan pencarian
                 });
               },
             ),
           ),
           //untuk kalender itu
           SizedBox(
-            height: 40,
+            height: 50,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: daysInMonth,
               itemBuilder: (context, index) {
                 final TextStyle dayTextStyle = TextStyle(fontSize: 12);
-                final TextStyle dateTextStyle = TextStyle(fontSize: 16);
+                final TextStyle dateTextStyle = TextStyle(
+                  fontSize: 20, // Mengubah ukuran teks angka tanggal
+                  fontWeight: FontWeight
+                      .bold, // Membuat teks angka tanggal menjadi bold
+                );
                 DateTime date = DateTime(
                     DateTime.now().year, DateTime.now().month, index + 1);
                 // inkwell untuk bayangan kalender di tekan
                 return InkWell(
                     splashColor:
-                        Colors.purple, // Warna bayangan ketika item ditekan
-                    borderRadius: BorderRadius.circular(10),
+                        Color.fromARGB(255, 117, 45, 179).withOpacity(0.5),
                     onTap: () {
                       _onDatePressed(DateTime(
                         DateTime.now().year,
@@ -160,29 +187,37 @@ class _GuestListState extends State<GuestList> {
                             1, // Menggunakan index + 1 untuk mendapatkan nomor hari
                       ));
                     },
-                    child: Container(
-                      width: 80,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _getDayOfWeek(date.weekday), // Get day of week
-                            style: dayTextStyle,
+                    borderRadius: BorderRadius.circular(180),
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Container(
+                          width: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape
+                                .circle, // Mengatur bentuk menjadi bulat
                           ),
-                          Text(
-                            '${date.day}', // Get day of month
-                            style: dateTextStyle,
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _getDayOfWeek(date.weekday), // Get day of week
+                                style: dayTextStyle,
+                              ),
+                              Text(
+                                '${date.day}', // Get day of month
+                                style: dateTextStyle,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ));
+                        )));
               },
             ),
           ),
+
+          SizedBox(height: 20),
           // Pesan "Tidak Ada Tamu" jika tidak ada tamu yang cocok dengan filter pada tanggal tersebut
-          if (!hasGuestsForSelectedDate)
+          if (!hasGuestsForSelectedDate && !_searchText.isEmpty)
             Center(
               child: Text(
                 'Tidak Ada Tamu',
@@ -198,6 +233,7 @@ class _GuestListState extends State<GuestList> {
               itemBuilder: (context, index) {
                 // Ambil data tamu dari _guests
                 final guest = _guests[index];
+
                 Color statusColor = Colors.grey;
 
                 // Tentukan warna berdasarkan status
@@ -213,39 +249,68 @@ class _GuestListState extends State<GuestList> {
                     break;
                 }
 
-                // Filter tamu berdasarkan tanggal yang dipilih
-                if (_selectedDate != null &&
-                    (_selectedDate!.isAfter(guest.checkInDate) ||
-                        _selectedDate!.isAtSameMomentAs(guest.checkInDate)) &&
-                    (_selectedDate!.isBefore(guest.checkOutDate) ||
-                        _selectedDate!.isAtSameMomentAs(guest.checkOutDate)))
                 // Cek apakah nama atau nomor kamar tamu cocok dengan _searchText
-                if (guest.name.toLowerCase().contains(_searchText) ||
+                // Ubah kondisi pencarian di sini
+                if (!_isSearching ||
+                    guest.name.toLowerCase().contains(_searchText) ||
                     guest.roomNumber.toLowerCase().contains(_searchText)) {
                   // Jika cocok, tampilkan data tamu tersebut dalam bentuk Card
                   return Card(
                     color: Colors.grey[200],
-                    margin: EdgeInsets.all(8.0),
+                    //margin: EdgeInsets.all(8.0),
+                    margin:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                     elevation: 2.0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: ListTile(
-                      title: Text(guest.name),
-                      subtitle: Text('Room ${guest.roomNumber}'),
+                      title: Text(
+                        'Room ${guest.roomNumber}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4),
+                          Text(
+                            ' ${guest.name}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            ' ${guest.roomType}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            ' Book ID : ${guest.bookId}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                                horizontal: 30, vertical: 6),
                             decoration: BoxDecoration(
                               color: statusColor,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Text(
-                              guest.status,
-                              style: TextStyle(color: Colors.white),
+                            child: Center(
+                              child: Text(
+                                _capitalizeEachWord(guest.status ??
+                                    ''), // Memanggil fungsi _capitalizeEachWord
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ],
@@ -292,5 +357,10 @@ class _GuestListState extends State<GuestList> {
       default:
         return '';
     }
+  }
+
+  String _capitalizeEachWord(String text) {
+    return text.toLowerCase().replaceAllMapped(
+        RegExp(r'^.|(\s|\-).'), (match) => match.group(0)!.toUpperCase());
   }
 }
