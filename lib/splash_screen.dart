@@ -25,9 +25,6 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      // //ini atur waktu gesss buat splashnyaaaaaaa
-      // Navigator.of(context).pushReplacement(
-      //     MaterialPageRoute(builder: (_) => CustomerDashboard()));
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (_) => CustomerDashboard()));
     });
