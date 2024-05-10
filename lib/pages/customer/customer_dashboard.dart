@@ -203,7 +203,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   SizedBox(height: 7),
                   RichText(
                     text: TextSpan(
-                      text: _roomData[index]['harga_per_malam'] ?? "Harga",
+                      text: _roomData[index]['harga'] != null
+                          ? 'IDR ${_roomData[index]['harga'] .toStringAsFixed(2)} /Night' // Format harga dengan dua digit desimal
+                          : "Harga",
                       style: TextStyle(
                         fontFamily: 'Jakarta',
                         fontWeight: FontWeight.bold,
@@ -214,22 +216,23 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   ),
                   SizedBox(height: 7),
                   Row(
-                    children: [
-                      Icon(
-                        Icons.bed_rounded,
-                        size: 14,
-                        color: Color(0xFFACA3A3),
-                      ),
-                      SizedBox(width: 7),
-                      Text(
-                        _roomData[index]['bed_tipe'] ?? "Tipe Tempat Tidur",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFFACA3A3),
-                        ),
-                      ),
-                    ],
-                  ),
+  children: [
+    Text(
+      '${_roomData[index]['kapasitas_ruangan']} orang : ',
+      style: TextStyle(
+        fontSize: 12,
+        color: Color(0xFFACA3A3),
+      ),
+    ),
+    Text(
+      _roomData[index]['bed_tipe'] ?? "Tipe Tempat Tidur",
+      style: TextStyle(
+        fontSize: 12,
+        color: Color(0xFFACA3A3),
+      ),
+    ),
+  ],
+),
                   SizedBox(height: 7),
                   Row(
                     children: [
