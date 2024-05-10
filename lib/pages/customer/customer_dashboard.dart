@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:frontend_hotel/pages/customer/profile.dart'; 
 import 'package:frontend_hotel/pages/customer/my_booking.dart';
@@ -12,6 +14,30 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
   TextEditingController _searchController = TextEditingController();
   String _searchText = '';
+  List<Map<String, dynamic>> _roomData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDataFromApi();
+  }
+
+  fetchDataFromApi() async {
+    var url = Uri.parse('http://127.0.0.1:8000/api/tipe_kamar');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        setState(() {
+          _roomData = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        throw Exception('Failed to load data from API');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +57,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 8.0), // Atur jarak atas, kanan, bawah, kiri
+            padding: const EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 8.0),
             child: TextField(
               controller: _searchController,
               onChanged: (value) {
@@ -57,9 +83,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               ),
             ),
           ),
-          Expanded(
-            child: _buildBody(),
-          ),
+          _buildBody(),
         ],
       ),
       bottomNavigationBar: ConvexAppBar(
@@ -95,105 +119,136 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   }
 
   Widget _buildBody() {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: 20, // Example, you can adjust this number according to your needs
-      itemBuilder: (context, index) => _ListRoom(index), // Passing index as parameter
-      separatorBuilder: (context, index) => SizedBox(height: 11),
+    return Expanded(
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: _roomData.length,
+        itemBuilder: (context, index) {
+          return _ListRoom(index);
+        },
+      ),
     );
   }
 
   Widget _ListRoom(int index) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF35385A).withOpacity(.12),
-            blurRadius: 30,
-            offset: const Offset(0, 2),
-          )
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: Image.asset(
-              'assets/images/prv.png', // Using index to dynamically load image
-              width: 88,
-              height: 103,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF35385A).withOpacity(.12),
+              blurRadius: 30,
+              offset: const Offset(0, 2),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+              child: _roomData[index]['gambar'] != null
+                  ? Image.network(
+                      _roomData[index]['gambar'],
+                      width: 88,
+                      height: 103,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 88,
+                          height: 103,
+                          color: Colors.grey[300],
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 40,
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      width: 88,
+                      height: 103,
+                      color: Colors.grey[300],
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 40,
+                        color: Colors.grey[600],
+                      ),
+                    ),
             ),
-          ),
-          const SizedBox(width: 20),
-          Flexible(
-            fit: FlexFit.tight,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Deluxe Room', // Example name
-                  style: TextStyle(
-                    fontFamily: 'Jakarta',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: const Color(0xFF3F3E3F),
-                  ),
-                ),
-                SizedBox(height: 7),
-                RichText(
-                  text: TextSpan(
-                    text: 'IDR 1.000.000 / night', // Example service
+            const SizedBox(width: 20),
+            Flexible(
+              fit: FlexFit.tight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _roomData[index]['nama_tipe'] ?? "Nama Kamar",
                     style: TextStyle(
                       fontFamily: 'Jakarta',
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: Color(0xFF4C4DDC),
+                      fontSize: 14,
+                      color: const Color(0xFF3F3E3F),
                     ),
                   ),
-                ),
-                SizedBox(height: 7),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.bed_rounded,
-                      size: 14,
-                      color: Color(0xFFACA3A3),
-                    ),
-                    SizedBox(width: 7),
-                    Text(
-                      'Queen Bed', // Example distance
+                  SizedBox(height: 7),
+                  RichText(
+                    text: TextSpan(
+                      text: _roomData[index]['harga_per_malam'] ?? "Harga",
                       style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFACA3A3),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 7),
-                Row(
-                  children: [
-                    Text(
-                      'Available',
-                      style: TextStyle(
-                        color: Color(0xFF50CC98),
+                        fontFamily: 'Jakarta',
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
+                        color: Color(0xFF4C4DDC),
                       ),
                     ),
-                    Spacer(),
-                    // Image.asset('assets/svgs/cat.svg'),
-                    SizedBox(width: 10),
-                    // Image.asset('assets/svgs/dog.svg'),
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(height: 7),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.bed_rounded,
+                        size: 14,
+                        color: Color(0xFFACA3A3),
+                      ),
+                      SizedBox(width: 7),
+                      Text(
+                        _roomData[index]['bed_tipe'] ?? "Tipe Tempat Tidur",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFFACA3A3),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 7),
+                  Row(
+                    children: [
+                      Text(
+                        'Available', // Example, can be replaced with data from API
+                        style: TextStyle(
+                          color: Color(0xFF50CC98),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
