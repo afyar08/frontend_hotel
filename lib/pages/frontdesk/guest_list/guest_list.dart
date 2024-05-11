@@ -29,7 +29,7 @@ class _GuestListState extends State<GuestList> {
 
   // Data dummy untuk daftar tamu
   List<Guest> _guests = [
-    Guest('John Doe', '101', '2 Twin Classic', '12345', 'reserved',
+    Guest('John Doe', '101', '2 Twin Classic',  '12345', 'reserved',
         DateTime(2024, 5, 1), DateTime(2024, 5, 2)),
     Guest('Jane Smith', '102', 'King Suite', '54321', 'check in',
         DateTime(2024, 5, 2), DateTime(2024, 5, 3)),

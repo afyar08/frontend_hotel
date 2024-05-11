@@ -9,6 +9,8 @@ import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart' as homeDash;
 import 'package:frontend_hotel/pages/frontdesk/frontdesk_dashboard.dart';
 import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping.dart';
+import 'package:frontend_hotel/pages/frontdesk/inhouse_guest.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -26,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => CustomerDashboard()));
+          .pushReplacement(MaterialPageRoute(builder: (_) => Home1()));
     });
   }
 

@@ -126,7 +126,7 @@ class _HomeState extends State<Home> {
                                             ),
                                             Row(
                                               children: <Widget>[
-                                                Icon(Icons.room),
+                                                Icon(Icons.bed_rounded),
                                                 SizedBox(
                                                   width: 10,
                                                 ),
