@@ -15,7 +15,7 @@ void main() => runApp(const FrontDeskDashboard());
 class FrontDeskDashboard extends StatelessWidget {
   const FrontDeskDashboard({super.key});
 
-  static const appTitle = 'Drawer Demo';
+  static const appTitle = 'FrontOfficePro';
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // ini untuk login ges
+  // ini untuk logout ges
   void _logout() async {
     try {
       Response response = await post(Uri.parse(
