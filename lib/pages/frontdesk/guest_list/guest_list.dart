@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'guest_detail.dart'; // Pastikan file guest_detail.dart diimpor
+import 'guest_detail.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class GuestList extends StatefulWidget {
   const GuestList({Key? key}) : super(key: key);
@@ -26,32 +28,43 @@ class _GuestListState extends State<GuestList> {
   String _searchText = '';
   late List<Guest> _initialGuests;
   bool _isSearching = false;
-
-  // Data dummy untuk daftar tamu
-  List<Guest> _guests = [
-    Guest('John Doe', '101', '2 Twin Classic',  '12345', 'reserved',
-        DateTime(2024, 5, 1), DateTime(2024, 5, 2)),
-    Guest('Jane Smith', '102', 'King Suite', '54321', 'check in',
-        DateTime(2024, 5, 2), DateTime(2024, 5, 3)),
-    Guest('Alice Johnson', '103', 'Double Room', '98765', 'reserved',
-        DateTime(2024, 5, 3), DateTime(2024, 5, 4)),
-    Guest('Bob Brown', '104', 'Standard Room', '13579', 'check out',
-        DateTime(2024, 5, 6), DateTime(2024, 5, 7)),
-    Guest('Emma Lee', '105', '2 Twin Classic', '24680', 'reserved',
-        DateTime(2024, 5, 7), DateTime(2024, 5, 8)),
-    Guest('Michael Davis', '106', 'King Suite', '11223', 'check in',
-        DateTime(2024, 5, 8), DateTime(2024, 5, 9)),
-    Guest('Sarah Wilson', '107', 'Double Room', '33445', 'check out',
-        DateTime(2024, 5, 5), DateTime(2024, 5, 10)),
-  ];
+  List<Guest> _guests = []; // Ganti dengan daftar tamu yang diambil dari API
 
   DateTime?
       _selectedDate; // Tambahkan properti untuk menyimpan tanggal yang dipilih
 
+  @override
   void initState() {
     super.initState();
-    // Menginisialisasi _initialGuests dengan salinan dari _guests
-    _initialGuests = List<Guest>.from(_guests);
+    _fetchGuests(); // Panggil fungsi untuk mengambil data tamu dari API
+  }
+
+  void _fetchGuests() async {
+    final response =
+        await http.get(Uri.parse('http://localhost:8000/api/reservasi'));
+    if (response.statusCode == 200) {
+      // Respons berhasil diterima
+      final List<dynamic> responseData = json.decode(response.body);
+      List<Guest> guests = responseData.map((data) {
+        return Guest(
+          data['name'],
+          data['roomNumber'],
+          data['roomType'],
+          data['bookId'].toString(),
+          data['status'],
+          DateTime.parse(data['checkInDate']),
+          DateTime.parse(data['checkOutDate']),
+        );
+      }).toList();
+
+      setState(() {
+        _initialGuests = guests;
+        _guests = List<Guest>.from(_initialGuests);
+      });
+    } else {
+      // Gagal mengambil data, cetak pesan kesalahan
+      print('Failed to load data: ${response.statusCode}');
+    }
   }
 
   void _onDatePressed(DateTime selectedDate) {
@@ -62,15 +75,27 @@ class _GuestListState extends State<GuestList> {
 
       if (_selectedDate != null) {
         // Mengatur daftar tamu yang akan di-filter
+        print('Selected Date: $_selectedDate');
         List<Guest> filteredGuests = _initialGuests
             .where((guest) =>
-                (_selectedDate!.isAtSameMomentAs(guest.checkInDate) ||
-                    _selectedDate!.isAtSameMomentAs(guest.checkOutDate)))
+                (_selectedDate != null &&
+                    ((guest.checkInDate.year == _selectedDate!.year &&
+                            guest.checkInDate.month == _selectedDate!.month &&
+                            guest.checkInDate.day == _selectedDate!.day) ||
+                        (guest.checkOutDate.year == _selectedDate!.year &&
+                            guest.checkOutDate.month == _selectedDate!.month &&
+                            guest.checkOutDate.day == _selectedDate!.day))) &&
+                guest.status != 'out of order')
             .toList();
 
         // Menampilkan daftar tamu yang telah difilter
         _guests.clear();
         _guests.addAll(filteredGuests);
+        // Print semua tamu yang telah difilter
+        print('Filtered Guests:');
+        filteredGuests.forEach((guest) {
+          print(guest.name);
+        });
       } else {
         // Jika tanggal tidak dipilih, tampilkan semua tamu
         _guests.clear();
