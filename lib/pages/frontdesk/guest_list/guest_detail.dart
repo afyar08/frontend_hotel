@@ -1,18 +1,70 @@
 import 'package:flutter/material.dart';
 import 'guest_list.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class GuestDetailPage extends StatelessWidget {
+class GuestDetail {
+  final String duration;
+  final int roomTotal;
+  final int adult;
+  final int children;
+  final double extra;
+  final double subTotal;
+
+  GuestDetail(this.duration, this.roomTotal, this.adult, this.children,
+      this.extra, this.subTotal);
+}
+
+class GuestDetailPage extends StatefulWidget {
   final Guest guest;
 
   const GuestDetailPage({Key? key, required this.guest}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final bookId = guest.bookId; // Simpan id book di variabel
-    // Print bookId di sini
-    print('Book ID: $bookId');
+  _GuestDetailPageState createState() => _GuestDetailPageState();
+}
 
+class _GuestDetailPageState extends State<GuestDetailPage> {
+  late GuestDetail _guestDetail;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGuestDetail();
+  }
+
+  Future<void> _fetchGuestDetail() async {
+    final bookId = widget.guest.bookId;
+    print('Fetching details for bookId: $bookId'); // Log bookId yang diambil
+    final url = Uri.parse(
+        'https://9236-182-253-124-170.ngrok-free.app/api/reservasi/$bookId');
+
+    try {
+      final response = await http.get(url);
+      print('GET request made to: $url'); // Log URL yang diambil
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        setState(() {
+          _guestDetail = GuestDetail(
+            responseData['duration'],
+            responseData['room_total'],
+            responseData['adult'],
+            responseData['children'],
+            double.parse(responseData['extra']),
+            double.parse(responseData['sub_total']),
+          );
+        });
+      } else {
+        throw Exception('Failed to fetch guest detail');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('Guest List')),
@@ -63,18 +115,18 @@ class GuestDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${guest.roomType}',
+                        '${widget.guest.roomType}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        '${guest.name}',
+                        '${widget.guest.name}',
                         style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Book ID: ${guest.bookId}',
+                        'Book ID: ${widget.guest.bookId}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
@@ -98,7 +150,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
+                    DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
                   ), // Menampilkan nilai guest.checkInDate
                   SizedBox(height: 8),
                   Text(
@@ -109,7 +161,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
+                    _guestDetail!.duration,
                   ), // Menampilkan nilai guest.checkInDate
                   SizedBox(height: 8), // bold and larger font size
                   Text(
@@ -120,7 +172,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
+                    DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
                   ), // Menampilkan nilai guest.checkInDate
                   SizedBox(height: 8), // bold and larger font size
                   Text(
@@ -131,7 +183,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.status,
+                    widget.guest.status,
                   ),
                 ],
               ),
@@ -146,7 +198,8 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkOutDate),
+                    DateFormat('dd MMMM yyyy')
+                        .format(widget.guest.checkOutDate),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -157,7 +210,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.roomType,
+                    widget.guest.roomType,
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -168,15 +221,14 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.roomNumber,
+                    widget.guest.roomNumber,
                   ),
                   SizedBox(height: 8),
                   Text('Reservation by',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   Text(
-                    //
-                    guest.roomNumber,
+                    widget.guest.roomNumber,
                   ),
                   SizedBox(height: 8), // bold and larger font size
                 ],
@@ -194,7 +246,7 @@ class GuestDetailPage extends StatelessWidget {
                         fontWeight:
                             FontWeight.bold)), // bold and larger font size
                 Text(
-                  DateFormat('dd MMMM yyyy').format(guest.checkOutDate),
+                  DateFormat('dd MMMM yyyy').format(widget.guest.checkOutDate),
                 ),
                 SizedBox(height: 8),
               ],
@@ -237,11 +289,11 @@ class GuestDetailPage extends StatelessWidget {
                                 SizedBox(
                                     height:
                                         4.0), // Jarak antara subjudul dan teks pertama
-                                Text('Room Total ( )'),
+                                Text('Room Total (${_guestDetail.roomTotal})'),
                                 SizedBox(height: 4),
-                                Text('Extras'),
+                                Text('Extras (${_guestDetail.extra})'),
                                 SizedBox(height: 14),
-                                Text('Subtotal'),
+                                Text('Subtotal (${_guestDetail.subTotal})'),
                                 SizedBox(height: 4),
                                 Text('Discount'),
                                 SizedBox(height: 4),
@@ -268,11 +320,14 @@ class GuestDetailPage extends StatelessWidget {
                                 SizedBox(
                                     height:
                                         4), // Jarak antara subjudul dan teks pertama
-                                Text('1'), // Teks kosong untuk kolom kanan
+                                Text(
+                                    '${_guestDetail.roomTotal}'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 4),
-                                Text('2'), // Teks kosong untuk kolom kanan
+                                Text(
+                                    '${_guestDetail.extra}'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 14),
-                                Text('3'), // Teks kosong untuk kolom kanan
+                                Text(
+                                    '${_guestDetail.subTotal}'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 4),
                                 Text('4'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 4),
