@@ -4,18 +4,6 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class GuestDetail {
-  final String duration;
-  final int roomTotal;
-  final int adult;
-  final int children;
-  final double extra;
-  final double subTotal;
-
-  GuestDetail(this.duration, this.roomTotal, this.adult, this.children,
-      this.extra, this.subTotal);
-}
-
 class GuestDetailPage extends StatefulWidget {
   final Guest guest;
 
@@ -25,8 +13,23 @@ class GuestDetailPage extends StatefulWidget {
   _GuestDetailPageState createState() => _GuestDetailPageState();
 }
 
+class GuestDetail {
+  final String room_plan;
+  final String reservation_by;
+  final String request;
+  final String duration;
+  final int roomTotal;
+  final int adult;
+  final int children;
+  final double extra;
+  final double subTotal;
+
+  GuestDetail(this.room_plan, this.reservation_by, this.request, this.duration,
+      this.roomTotal, this.adult, this.children, this.extra, this.subTotal);
+}
+
 class _GuestDetailPageState extends State<GuestDetailPage> {
-  late GuestDetail _guestDetail;
+  GuestDetail? _guestDetail;
 
   @override
   void initState() {
@@ -37,8 +40,7 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
   Future<void> _fetchGuestDetail() async {
     final bookId = widget.guest.bookId;
     print('Fetching details for bookId: $bookId'); // Log bookId yang diambil
-    final url = Uri.parse(
-        'https://9236-182-253-124-170.ngrok-free.app/api/reservasi/$bookId');
+    final url = Uri.parse('http://localhost:8000/api/reservasi/$bookId');
 
     try {
       final response = await http.get(url);
@@ -47,6 +49,9 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
         final responseData = json.decode(response.body);
         setState(() {
           _guestDetail = GuestDetail(
+            responseData['room_plan'],
+            responseData['reservation_by'],
+            responseData['request'],
             responseData['duration'],
             responseData['room_total'],
             responseData['adult'],
@@ -67,7 +72,7 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Guest List')),
+        title: Text('Guest List'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -88,20 +93,13 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
             width: double.infinity,
             child: Row(
               children: [
-                // Tambahkan foto di sini
                 Container(
-                  width: 100, // Atur lebar foto
-                  height: 100, // Atur tinggi foto
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10.0),
-                    // image: DecorationImage(
-                    //   image: NetworkImage(
-                    //       'URL_FOTO'), // Ganti dengan URL foto dari database
-                    //   fit: BoxFit.cover,
-                    // ),
                   ),
-                  // Tambahkan placeholder teks jika foto belum tersedia
                   child: Center(
                     child: Text(
                       'No Photo',
@@ -109,7 +107,7 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0), // Jarak antara foto dan teks
+                SizedBox(width: 16.0),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -151,7 +149,7 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                   ),
                   Text(
                     DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
-                  ), // Menampilkan nilai guest.checkInDate
+                  ),
                   SizedBox(height: 8),
                   Text(
                     'Guest',
@@ -160,10 +158,11 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    _guestDetail!.duration,
-                  ), // Menampilkan nilai guest.checkInDate
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text(
+                          '${_guestDetail!.adult} Adult, ${_guestDetail!.children} Children')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                   Text(
                     'Room plan',
                     style: TextStyle(
@@ -171,10 +170,10 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
-                  ), // Menampilkan nilai guest.checkInDate
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text('${_guestDetail!.room_plan}')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                   Text(
                     'Status',
                     style: TextStyle(
@@ -227,10 +226,10 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                   Text('Reservation by',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  Text(
-                    widget.guest.roomNumber,
-                  ),
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text('${_guestDetail!.reservation_by}')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                 ],
               ),
             ],
@@ -245,9 +244,9 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                         fontSize: 20,
                         fontWeight:
                             FontWeight.bold)), // bold and larger font size
-                Text(
-                  DateFormat('dd MMMM yyyy').format(widget.guest.checkOutDate),
-                ),
+                _guestDetail != null
+                    ? Text('${_guestDetail!.request}')
+                    : CircularProgressIndicator(),
                 SizedBox(height: 8),
               ],
             ),
@@ -267,7 +266,6 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Bagian atas
                       Text(
                         'Booking Summary',
                         style: TextStyle(
@@ -275,25 +273,22 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                          height:
-                              4.0), // Jarak antara subjudul dan teks pertama
-                      // Bagian bawah (teks)
+                      SizedBox(height: 4.0),
                       Row(
                         children: [
-                          // Column 1 (kiri)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                    height:
-                                        4.0), // Jarak antara subjudul dan teks pertama
-                                Text('Room Total (${_guestDetail.roomTotal})'),
+                                SizedBox(height: 4.0),
+                                Text(
+                                    'Room Total (${_guestDetail?.roomTotal ?? "Loading..."})'),
                                 SizedBox(height: 4),
-                                Text('Extras (${_guestDetail.extra})'),
+                                Text(
+                                    'Extras (${_guestDetail?.extra ?? "Loading..."})'),
                                 SizedBox(height: 14),
-                                Text('Subtotal (${_guestDetail.subTotal})'),
+                                Text(
+                                    'Subtotal (${_guestDetail?.subTotal ?? "Loading..."})'),
                                 SizedBox(height: 4),
                                 Text('Discount'),
                                 SizedBox(height: 4),
@@ -310,37 +305,30 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                               ],
                             ),
                           ),
-                          // Spacer untuk memberikan jarak antara dua kolom
                           SizedBox(width: 20),
-                          // Column 2 (kanan)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                SizedBox(
-                                    height:
-                                        4), // Jarak antara subjudul dan teks pertama
-                                Text(
-                                    '${_guestDetail.roomTotal}'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 4),
-                                Text(
-                                    '${_guestDetail.extra}'), // Teks kosong untuk kolom kanan
+                                Text('harga satuan kali room total'),
+                                SizedBox(height: 4),
+                                Text('Harga layanan tambahan'),
                                 SizedBox(height: 14),
+                                Text('sub total roomtotal + extra'),
+                                SizedBox(height: 4),
+                                Text('total diskon'),
+                                SizedBox(height: 4),
+                                Text('total pajak'),
+                                SizedBox(height: 4),
                                 Text(
-                                    '${_guestDetail.subTotal}'), // Teks kosong untuk kolom kanan
-                                SizedBox(height: 4),
-                                Text('4'), // Teks kosong untuk kolom kanan
-                                SizedBox(height: 4),
-                                Text('5'), // Teks kosong untuk kolom kanan
-                                SizedBox(height: 4),
-                                Text(
-                                  '6',
+                                  'sub total - diskon + pajak',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.red,
                                   ),
-                                ) // Teks kosong untuk kolom kanan
+                                )
                               ],
                             ),
                           ),
