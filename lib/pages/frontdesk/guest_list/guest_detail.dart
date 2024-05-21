@@ -22,28 +22,6 @@ class GuestDetailPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                child: Text('Option 1'),
-                value: 1,
-              ),
-              PopupMenuItem(
-                child: Text('Option 2'),
-                value: 2,
-              ),
-              PopupMenuItem(
-                child: Text('Option 3'),
-                value: 3,
-              ),
-            ],
-            icon: Icon(Icons.more_horiz),
-            onSelected: (value) {
-              // Handle selected option
-            },
-          )
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
