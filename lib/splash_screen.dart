@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:frontend_hotel/pages/frontdesk/booking/Individual.dart';
 import 'package:frontend_hotel/pages/frontdesk/detail_room.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart';
+import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
 import 'package:frontend_hotel/pages/home1.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
 import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
