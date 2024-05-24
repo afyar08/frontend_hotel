@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping/change_status_dialog.dart';
 
 class HouseKeeping extends StatefulWidget {
   const HouseKeeping({Key? key}) : super(key: key);
@@ -276,7 +277,21 @@ class _HouseKeepingState extends State<HouseKeeping> {
                           textStyle: TextStyle(fontSize: 16),
                         ),
                         onPressed: () {
-                          // Define what happens when the button is pressed
+                          // Show Change Status dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ChangeStatusDialog(
+                                roomNumber: room.no_kamar,
+                                roomType: room.roomType,
+                              );
+                            },
+                          ).then((selectedStatus) {
+                            // Handle the selected status here, if needed
+                            if (selectedStatus != null) {
+                              print('Selected Status: $selectedStatus');
+                            }
+                          });
                         },
                         child: Text(room.status_kamar),
                       ),
