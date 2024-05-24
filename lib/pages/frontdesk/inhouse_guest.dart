@@ -64,9 +64,7 @@ class _InHouseGuestState extends State<InHouseGuest> {
                   future: res,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Row(
-                        children: <Widget>[],
-                      );
+                      return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text(
                         'Total In House Guest: ${snapshot.error}',
@@ -179,7 +177,7 @@ class RoomList extends StatelessWidget {
                   ),
                   child: ListTile(
                     title: Text(
-                      'Room ${guest}',
+                      'Room ${guest['kamar']['no_kamar']}',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -190,18 +188,18 @@ class RoomList extends StatelessWidget {
                       children: [
                         SizedBox(height: 4),
                         Text(
-                          ' u',
+                          '${guest['tamu']['nama']}',
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
-                          ' y',
+                          '${guest['tipe_kamar']['nama_tipe']}',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 4),
                       ],
                     ),
                     trailing: Text(
-                      ' Book ID : ',
+                      ' Book ID : ${guest['kamar']['id']}',
                       style: TextStyle(fontSize: 16),
                     ),
                     onTap: () {
