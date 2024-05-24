@@ -10,7 +10,8 @@ import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart' as homeDash;
 import 'package:frontend_hotel/pages/frontdesk/frontdesk_dashboard.dart';
 import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
-import 'package:frontend_hotel/pages/frontdesk/housekeeping.dart';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping/housekeeping.dart';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping/change_status_dialog.dart';
 import 'package:frontend_hotel/pages/frontdesk/inhouse_guest.dart';
 
 class SplashScreen extends StatefulWidget {

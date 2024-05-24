@@ -3,7 +3,7 @@ import 'package:frontend_hotel/pages/frontdesk/available_status.dart';
 import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
 import 'package:frontend_hotel/pages/home.dart' as mainHome;
 import 'package:frontend_hotel/pages/frontdesk/home.dart';
-import 'package:frontend_hotel/pages/frontdesk/housekeeping.dart';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping/housekeeping.dart';
 import 'package:frontend_hotel/pages/frontdesk/inhouse_guest.dart';
 import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
 import 'package:frontend_hotel/pages/frontdesk/reserved_status.dart';
