@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:frontend_hotel/pages/frontdesk/housekeeping/change_status_dialog.dart';
 
 class HouseKeeping extends StatefulWidget {
   const HouseKeeping({Key? key}) : super(key: key);
@@ -14,8 +17,23 @@ class Room {
   final String no_kamar;
   final String roomType;
 
-  Room(this.status_kamar, this.status_reservasi, this.harga, this.no_kamar,
-      this.roomType);
+  Room({
+    required this.status_kamar,
+    required this.status_reservasi,
+    required this.harga,
+    required this.no_kamar,
+    required this.roomType,
+  });
+
+  factory Room.fromJson(Map<String, dynamic> json) {
+    return Room(
+      status_kamar: json['status_kamar'],
+      status_reservasi: json['status_reservasi'],
+      harga: double.parse(json['harga']),
+      no_kamar: json['no_kamar'],
+      roomType: json['tipe_kamar']['nama_tipe'],
+    );
+  }
 }
 
 class _HouseKeepingState extends State<HouseKeeping> {
@@ -25,42 +43,55 @@ class _HouseKeepingState extends State<HouseKeeping> {
   bool _pickupChecked = false;
   bool _inspectedChecked = false;
   bool _outOfOrderChecked = false;
-  List<Room> _initialRooms = [
-    Room('clean', 'reserved', 100.0, '101', 'Deluxe'),
-    Room('dirty', 'check in', 120.0, '102', 'Suite'),
-    Room('pickup', 'out of order', 80.0, '103', 'Standard'),
-    Room('inspected', 'reserved', 90.0, '104', 'Deluxe'),
-    Room('out of order', 'reserved', 90.0, '104', 'Deluxe'),
-  ];
+  List<Room> _initialRooms = [];
   List<Room> _rooms = [];
 
   @override
   void initState() {
     super.initState();
-    _rooms = [];
+    fetchRooms();
+  }
+
+  Future<void> fetchRooms() async {
+    try {
+      final response =
+          await http.get(Uri.parse('http://localhost:8000/api/kamar'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _initialRooms = data.map((json) => Room.fromJson(json)).toList();
+          _rooms = [];
+        });
+      } else {
+        throw Exception('Failed to load rooms');
+      }
+    } catch (e) {
+      print('Error fetching rooms: $e');
+    }
   }
 
   void updateSearch(String searchText) {
     setState(() {
-      if (searchText.isEmpty &&
-          !_cleanChecked &&
-          !_dirtyChecked &&
-          !_pickupChecked &&
-          !_inspectedChecked &&
-          !_outOfOrderChecked) {
+      List<String> activeStatuses = [];
+      if (_cleanChecked) activeStatuses.add('clean');
+      if (_dirtyChecked) activeStatuses.add('dirty');
+      if (_pickupChecked) activeStatuses.add('pickup');
+      if (_inspectedChecked) activeStatuses.add('inspected');
+      if (_outOfOrderChecked) activeStatuses.add('out of order');
+
+      if (searchText.isEmpty && activeStatuses.isEmpty) {
         _isSearching = false;
         _rooms = [];
       } else {
         _isSearching = true;
-        _rooms = _initialRooms
-            .where((room) =>
-                room.no_kamar.toLowerCase().contains(searchText) &&
-                (_cleanChecked && room.status_kamar == 'clean' ||
-                    _dirtyChecked && room.status_kamar == 'dirty' ||
-                    _pickupChecked && room.status_kamar == 'pickup' ||
-                    _inspectedChecked && room.status_kamar == 'inspected' ||
-                    _outOfOrderChecked && room.status_kamar == 'out of order'))
-            .toList();
+        _rooms = _initialRooms.where((room) {
+          bool matchesSearchText =
+              room.no_kamar.toLowerCase().contains(searchText);
+          bool matchesStatus = activeStatuses.isEmpty ||
+              activeStatuses.contains(room.status_kamar);
+          return matchesSearchText && matchesStatus;
+        }).toList();
       }
     });
   }
@@ -246,7 +277,21 @@ class _HouseKeepingState extends State<HouseKeeping> {
                           textStyle: TextStyle(fontSize: 16),
                         ),
                         onPressed: () {
-                          // Define what happens when the button is pressed
+                          // Show Change Status dialog
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ChangeStatusDialog(
+                                roomNumber: room.no_kamar,
+                                roomType: room.roomType,
+                              );
+                            },
+                          ).then((selectedStatus) {
+                            // Handle the selected status here, if needed
+                            if (selectedStatus != null) {
+                              print('Selected Status: $selectedStatus');
+                            }
+                          });
                         },
                         child: Text(room.status_kamar),
                       ),
