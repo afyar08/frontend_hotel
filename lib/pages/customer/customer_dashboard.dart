@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:frontend_hotel/pages/customer/profile.dart'; 
 import 'package:frontend_hotel/pages/customer/my_booking.dart';
+import 'package:frontend_hotel/pages/customer/cust_detail_room.dart';
 
 class CustomerDashboard extends StatefulWidget {
   @override
