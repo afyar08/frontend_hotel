@@ -64,7 +64,9 @@ class _InHouseGuestState extends State<InHouseGuest> {
                   future: res,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Row();
+                      return Row(
+                        children: <Widget>[],
+                      );
                     } else if (snapshot.hasError) {
                       return Text(
                         'Total In House Guest: ${snapshot.error}',
