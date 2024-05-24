@@ -1,49 +1,84 @@
 import 'package:flutter/material.dart';
 import 'guest_list.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class GuestDetailPage extends StatelessWidget {
+class GuestDetailPage extends StatefulWidget {
   final Guest guest;
 
   const GuestDetailPage({Key? key, required this.guest}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final bookId = guest.bookId; // Simpan id book di variabel
-    // Print bookId di sini
-    print('Book ID: $bookId');
+  _GuestDetailPageState createState() => _GuestDetailPageState();
+}
 
+class GuestDetail {
+  final String room_plan;
+  final String reservation_by;
+  final String request;
+  final String duration;
+  final int roomTotal;
+  final int adult;
+  final int children;
+  final double extra;
+  final double subTotal;
+
+  GuestDetail(this.room_plan, this.reservation_by, this.request, this.duration,
+      this.roomTotal, this.adult, this.children, this.extra, this.subTotal);
+}
+
+class _GuestDetailPageState extends State<GuestDetailPage> {
+  GuestDetail? _guestDetail;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGuestDetail();
+  }
+
+  Future<void> _fetchGuestDetail() async {
+    final bookId = widget.guest.bookId;
+    print('Fetching details for bookId: $bookId'); // Log bookId yang diambil
+    final url = Uri.parse('http://localhost:8000/api/reservasi/$bookId');
+
+    try {
+      final response = await http.get(url);
+      print('GET request made to: $url'); // Log URL yang diambil
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        setState(() {
+          _guestDetail = GuestDetail(
+            responseData['room_plan'],
+            responseData['reservation_by'],
+            responseData['request'],
+            responseData['duration'],
+            responseData['room_total'],
+            responseData['adult'],
+            responseData['children'],
+            double.parse(responseData['extra']),
+            double.parse(responseData['sub_total']),
+          );
+        });
+      } else {
+        throw Exception('Failed to fetch guest detail');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Guest List')),
+        title: Text('Guest List'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          PopupMenuButton(
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                child: Text('Option 1'),
-                value: 1,
-              ),
-              PopupMenuItem(
-                child: Text('Option 2'),
-                value: 2,
-              ),
-              PopupMenuItem(
-                child: Text('Option 3'),
-                value: 3,
-              ),
-            ],
-            icon: Icon(Icons.more_horiz),
-            onSelected: (value) {
-              // Handle selected option
-            },
-          )
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,20 +93,13 @@ class GuestDetailPage extends StatelessWidget {
             width: double.infinity,
             child: Row(
               children: [
-                // Tambahkan foto di sini
                 Container(
-                  width: 100, // Atur lebar foto
-                  height: 100, // Atur tinggi foto
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10.0),
-                    // image: DecorationImage(
-                    //   image: NetworkImage(
-                    //       'URL_FOTO'), // Ganti dengan URL foto dari database
-                    //   fit: BoxFit.cover,
-                    // ),
                   ),
-                  // Tambahkan placeholder teks jika foto belum tersedia
                   child: Center(
                     child: Text(
                       'No Photo',
@@ -79,24 +107,24 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0), // Jarak antara foto dan teks
+                SizedBox(width: 16.0),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${guest.roomType}',
+                        '${widget.guest.roomType}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        '${guest.name}',
+                        '${widget.guest.name}',
                         style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Book ID: ${guest.bookId}',
+                        'Book ID: ${widget.guest.bookId}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
@@ -120,8 +148,8 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
-                  ), // Menampilkan nilai guest.checkInDate
+                    DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
+                  ),
                   SizedBox(height: 8),
                   Text(
                     'Guest',
@@ -130,10 +158,11 @@ class GuestDetailPage extends StatelessWidget {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
-                  ), // Menampilkan nilai guest.checkInDate
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text(
+                          '${_guestDetail!.adult} Adult, ${_guestDetail!.children} Children')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                   Text(
                     'Room plan',
                     style: TextStyle(
@@ -141,10 +170,10 @@ class GuestDetailPage extends StatelessWidget {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkInDate),
-                  ), // Menampilkan nilai guest.checkInDate
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text('${_guestDetail!.room_plan}')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                   Text(
                     'Status',
                     style: TextStyle(
@@ -153,7 +182,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.status,
+                    widget.guest.status,
                   ),
                 ],
               ),
@@ -168,7 +197,8 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat('dd MMMM yyyy').format(guest.checkOutDate),
+                    DateFormat('dd MMMM yyyy')
+                        .format(widget.guest.checkOutDate),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -179,7 +209,7 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.roomType,
+                    widget.guest.roomType,
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -190,17 +220,16 @@ class GuestDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    guest.roomNumber,
+                    widget.guest.roomNumber,
                   ),
                   SizedBox(height: 8),
                   Text('Reservation by',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                  Text(
-                    //
-                    guest.roomNumber,
-                  ),
-                  SizedBox(height: 8), // bold and larger font size
+                  _guestDetail != null
+                      ? Text('${_guestDetail!.reservation_by}')
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 8),
                 ],
               ),
             ],
@@ -215,9 +244,9 @@ class GuestDetailPage extends StatelessWidget {
                         fontSize: 20,
                         fontWeight:
                             FontWeight.bold)), // bold and larger font size
-                Text(
-                  DateFormat('dd MMMM yyyy').format(guest.checkOutDate),
-                ),
+                _guestDetail != null
+                    ? Text('${_guestDetail!.request}')
+                    : CircularProgressIndicator(),
                 SizedBox(height: 8),
               ],
             ),
@@ -237,7 +266,6 @@ class GuestDetailPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Bagian atas
                       Text(
                         'Booking Summary',
                         style: TextStyle(
@@ -245,25 +273,22 @@ class GuestDetailPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                          height:
-                              4.0), // Jarak antara subjudul dan teks pertama
-                      // Bagian bawah (teks)
+                      SizedBox(height: 4.0),
                       Row(
                         children: [
-                          // Column 1 (kiri)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                    height:
-                                        4.0), // Jarak antara subjudul dan teks pertama
-                                Text('Room Total ( )'),
+                                SizedBox(height: 4.0),
+                                Text(
+                                    'Room Total (${_guestDetail?.roomTotal ?? "Loading..."})'),
                                 SizedBox(height: 4),
-                                Text('Extras'),
+                                Text(
+                                    'Extras (${_guestDetail?.extra ?? "Loading..."})'),
                                 SizedBox(height: 14),
-                                Text('Subtotal'),
+                                Text(
+                                    'Subtotal (${_guestDetail?.subTotal ?? "Loading..."})'),
                                 SizedBox(height: 4),
                                 Text('Discount'),
                                 SizedBox(height: 4),
@@ -280,34 +305,30 @@ class GuestDetailPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Spacer untuk memberikan jarak antara dua kolom
                           SizedBox(width: 20),
-                          // Column 2 (kanan)
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                SizedBox(
-                                    height:
-                                        4), // Jarak antara subjudul dan teks pertama
-                                Text('1'), // Teks kosong untuk kolom kanan
                                 SizedBox(height: 4),
-                                Text('2'), // Teks kosong untuk kolom kanan
+                                Text('harga satuan kali room total'),
+                                SizedBox(height: 4),
+                                Text('Harga layanan tambahan'),
                                 SizedBox(height: 14),
-                                Text('3'), // Teks kosong untuk kolom kanan
+                                Text('sub total roomtotal + extra'),
                                 SizedBox(height: 4),
-                                Text('4'), // Teks kosong untuk kolom kanan
+                                Text('total diskon'),
                                 SizedBox(height: 4),
-                                Text('5'), // Teks kosong untuk kolom kanan
+                                Text('total pajak'),
                                 SizedBox(height: 4),
                                 Text(
-                                  '6',
+                                  'sub total - diskon + pajak',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                     color: Colors.red,
                                   ),
-                                ) // Teks kosong untuk kolom kanan
+                                )
                               ],
                             ),
                           ),
