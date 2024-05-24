@@ -64,14 +64,7 @@ class _InHouseGuestState extends State<InHouseGuest> {
                   future: res,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text(
-                        'Total In House Guest: ${snapshot.data!.length}',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );CircularProgressIndicator();
+                      return Row();
                     } else if (snapshot.hasError) {
                       return Text(
                         'Total In House Guest: ${snapshot.error}',
