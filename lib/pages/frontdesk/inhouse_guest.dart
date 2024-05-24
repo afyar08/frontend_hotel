@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(const ListTileApp());
 
@@ -22,10 +24,33 @@ class InHouseGuest extends StatefulWidget {
 }
 
 class _InHouseGuestState extends State<InHouseGuest> {
+  late Future<List<dynamic>> res;
+
+  Future<List<dynamic>> getGuest() async {
+    final response = await http.get(
+      Uri.parse('http://127.0.0.1:8000/api/inHouseGuest'),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load tamu');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    res = getGuest(); // Fetch data when the widget is initialized
+    res.then((data) {
+      print(data[0]); // Print the fetched data for debugging
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ListTile Sample')),
+      appBar: AppBar(title: const Text('Guest List')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -35,19 +60,44 @@ class _InHouseGuestState extends State<InHouseGuest> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                Text(
-                  'Total In House Guest:',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                FutureBuilder<List<dynamic>>(
+                  future: res,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Text(
+                        'Total In House Guest: ${snapshot.data!.length}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text(
+                        'Total In House Guest: ${snapshot.error}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    } else {
+                      return Text(
+                        'Total In House Guest: ${snapshot.data!.length}',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             ),
           ),
           Expanded(
-            child: RoomList(),
+            child: RoomList(res),
           ),
         ],
       ),
@@ -97,33 +147,84 @@ class _SearchInputState extends State<SearchInput> {
 }
 
 class RoomList extends StatelessWidget {
+  final Future<List<dynamic>> guestData; // Tambahkan parameter
+
+  RoomList(this.guestData); // Konstruktor dengan parameter
   @override
   Widget build(BuildContext context) {
-    List<String> rooms = ['Room 101', 'Room 102', 'Room 103', 'Room 104'];
-
-    return ListView.builder(
-      itemCount: rooms.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailRoom(roomName: rooms[index]),
-              ),
+    return Expanded(
+      child: FutureBuilder<List<dynamic>>(
+        future: guestData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          },
-          child: Card(
-            margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: ListTile(
-              title: Text(
-                rooms[index],
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
-          ),
-        );
-      },
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text('No Guest Found'),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, i) {
+                var guest = snapshot.data![i];
+
+                return Card(
+                  color: Colors.grey[200],
+                  //margin: EdgeInsets.all(8.0),
+                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  elevation: 2.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      'Room ${guest}',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 4),
+                        Text(
+                          ' u',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          ' y',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 4),
+                      ],
+                    ),
+                    trailing: Text(
+                      ' Book ID : ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    onTap: () {
+                      // Navigasi ke halaman detail tamu saat ListTile ditekan
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => GuestDetailPage(guest: guest),
+                      //   ),
+                      // );
+                    },
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -137,13 +238,8 @@ class DetailRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text( 
+        title: Text(
           roomName,
-          // style: TextStyle(
-          //   fontFamily: 'Jakarta',
-          //   fontWeight: FontWeight.bold,
-          //   fontSize: 18,
-          // ),
         ),
       ),
       body: Center(
@@ -152,4 +248,3 @@ class DetailRoom extends StatelessWidget {
     );
   }
 }
-

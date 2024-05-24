@@ -10,7 +10,7 @@ class IndividualBooking extends StatefulWidget {
 }
 
 class _IndividualBookingState extends State<IndividualBooking> {
-  String _selectedOption = 'Option 1'; // Initialize the selected dropdown option
+  String _selectedOption = 'Reservation by'; // Initialize the selected dropdown option
   String _selectedCheckIn = 'Morning'; // Initialize the selected check-in option
   String _selectedDuration = '1 Hour'; // Initialize the selected duration option
   String _selectedRoomType = 'Single'; // Initialize the selected room type option
@@ -85,7 +85,7 @@ Widget build(BuildContext context) {
             child: DropdownButtonFormField<String>(
               value: _selectedOption,
               decoration: InputDecoration(
-                labelText: 'Select Option',
+                labelText: 'Reservation by',
                 border: OutlineInputBorder(),
               ),
               items: <String>[
