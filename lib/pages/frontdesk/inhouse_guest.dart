@@ -25,7 +25,7 @@ class _InHouseGuestState extends State<InHouseGuest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ListTile Sample')),
+      appBar: AppBar(title: const Text('Guest List')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -59,6 +59,8 @@ class SearchInput extends StatefulWidget {
   @override
   State<SearchInput> createState() => _SearchInputState();
 }
+
+
 
 class _SearchInputState extends State<SearchInput> {
   final TextEditingController _searchController = TextEditingController();
@@ -99,7 +101,7 @@ class _SearchInputState extends State<SearchInput> {
 class RoomList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    List<String> rooms = ['Room 101', 'Room 102', 'Room 103', 'Room 104'];
+    List<String> rooms = ['Room 001', 'Room 002', 'Room 003', 'Room 004'];
 
     return ListView.builder(
       itemCount: rooms.length,
@@ -114,19 +116,61 @@ class RoomList extends StatelessWidget {
             );
           },
           child: Card(
-            margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            child: ListTile(
-              title: Text(
-                rooms[index],
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
-          ),
+                    color: Colors.grey[200],
+                    //margin: EdgeInsets.all(8.0),
+                    margin:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    elevation: 2.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        'Room',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 4),
+                          Text(
+                            ' u',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          Text(
+                            ' y',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 4),
+                          
+                        ],
+                      ),
+                      trailing: Text(
+                            ' Book ID : ',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                      onTap: () {
+                        // Navigasi ke halaman detail tamu saat ListTile ditekan
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => GuestDetailPage(guest: guest),
+                        //   ),
+                        // );
+                      },
+                    ),
+                  ),
         );
       },
     );
   }
 }
+
+
+
 
 class DetailRoom extends StatelessWidget {
   final String roomName;
@@ -139,11 +183,6 @@ class DetailRoom extends StatelessWidget {
       appBar: AppBar(
         title: Text( 
           roomName,
-          // style: TextStyle(
-          //   fontFamily: 'Jakarta',
-          //   fontWeight: FontWeight.bold,
-          //   fontSize: 18,
-          // ),
         ),
       ),
       body: Center(
