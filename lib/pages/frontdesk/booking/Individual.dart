@@ -10,7 +10,9 @@ class IndividualBooking extends StatefulWidget {
 }
 
 class _IndividualBookingState extends State<IndividualBooking> {
-  String _selectedOption = 'Reservation by'; // Initialize the selected dropdown option
+  final _formKey = GlobalKey<FormState>(); // Define a GlobalKey for the form
+
+  String _selectedOption = 'Option 1'; // Initialize the selected dropdown option
   String _selectedCheckIn = 'Morning'; // Initialize the selected check-in option
   String _selectedDuration = '1 Hour'; // Initialize the selected duration option
   String _selectedRoomType = 'Single'; // Initialize the selected room type option
@@ -24,57 +26,60 @@ class _IndividualBookingState extends State<IndividualBooking> {
   String _selectedTitle = 'Mr.'; // Initialize the selected title option
   String _selectedMember = 'Yes'; // Initialize the selected member option
   String _email = ''; // Initialize the email field
-  String _PhoneNumber = ''; // Initialize the phone number field
+  String _phoneNumber = ''; // Initialize the phone number field
   String _request = ''; // Initialize the request field
   String _selectedPaymentType = 'Cash'; // Initialize the selected payment type option
   String _selectedBank = 'Bank A'; // Initialize the selected bank option
   String _cardNumber = ''; // Initialize the card number field
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      leading: IconButton(
-        onPressed: () {
-         Navigator.of(context).pop();
-        },
-        icon: Icon(
-          Icons.arrow_back,
-          size: 30,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            size: 30,
+          ),
         ),
-      ),
-      title: Text(
-        'Individual Booking',
-        style: TextStyle(
-          fontFamily: 'Jakarta',
-          fontWeight: FontWeight.bold, // Medium
-          fontSize: 18, // Ukuran font yang Anda inginkan
+        title: Text(
+          'Individual Booking',
+          style: TextStyle(
+            fontFamily: 'Jakarta',
+            fontWeight: FontWeight.bold, // Medium
+            fontSize: 18, // Ukuran font yang Anda inginkan
+          ),
         ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(Icons.list_rounded),
+          )
+        ],
       ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.list_rounded),
-        )
-      ],
-    ),
-    body: SingleChildScrollView(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _buildDropdown(),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: _formKey, // Assign the key to the form
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 20),
+                  _buildDropdown(),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildDropdown() {
     return Column(
@@ -356,37 +361,24 @@ Widget build(BuildContext context) {
               ),
             ),
             SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedMember,
-                    decoration: InputDecoration(
-                      labelText: 'Member',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Yes',
-                      'No',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedMember = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
+            
           ],
         ),
         SizedBox(height: 10),
+        ListTile(
+          title: TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Other',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) {
+              setState(() {
+                _email = value;
+              });
+            },
+          ),
+        ),
+        SizedBox(height: 30),
         ListTile(
           title: TextFormField(
             decoration: InputDecoration(
@@ -414,7 +406,7 @@ Widget build(BuildContext context) {
             ),
             onChanged: (value) {
               setState(() {
-                _PhoneNumber = value;
+                _phoneNumber = value;
               });
             },
             validator: (value) {
@@ -522,27 +514,32 @@ Widget build(BuildContext context) {
         ),
         SizedBox(height: 20),
         TextButton(
-                  //buat next
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BookingSummary()),
-                      );
-                    },
-                    child: Container(
-                      child: Text(
-                        'Booking',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      padding: EdgeInsets.fromLTRB(
-                          100, 20, 100, 20), // jarak ke dalam
-                      decoration: BoxDecoration(
-                        color: Colors.blue[800],
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                    )),
-                    SizedBox(height: 20),
+          //buat next
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BookingSummary()),
+              );
+            }
+          },
+          child: Container(
+            child: Text(
+              'Booking',
+              style: TextStyle(
+                fontFamily: 'Jakarta',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,),
+            ),
+            padding: EdgeInsets.fromLTRB(
+                100, 20, 100, 20), // jarak ke dalam
+            decoration: BoxDecoration(
+              color: Color(0xFF4C4DDC),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
       ],
     );
   }
