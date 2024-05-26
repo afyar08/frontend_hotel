@@ -1,10 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
 import 'package:frontend_hotel/pages/customer/my_booking.dart';
+import 'package:frontend_hotel/pages/login/customer.dart'; // Import the login page
 
 class ProfilePage1 extends StatelessWidget {
   const ProfilePage1({Key? key}) : super(key: key);
+
+  Future<void> _logout(BuildContext context) async {
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/api/auth:guest/logout'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Logout successful, navigate to login page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Customer()),
+      );
+    } else {
+      // Logout failed, show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logout failed. Please try again.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +69,7 @@ class ProfilePage1 extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     FloatingActionButton.extended(
-                      onPressed: () {},
+                      onPressed: () => _logout(context),
                       heroTag: 'Logout',
                       elevation: 0,
                       backgroundColor: const Color.fromARGB(255, 254, 78, 66),
