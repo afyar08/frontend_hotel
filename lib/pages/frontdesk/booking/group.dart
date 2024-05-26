@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import untuk menggunakan TextInputFormatter
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/group_next.dart';
 
 class GroupBooking extends StatefulWidget {
   const GroupBooking({Key? key}) : super(key: key);
@@ -11,11 +12,11 @@ class GroupBooking extends StatefulWidget {
 }
 
 class _GroupBookingState extends State<GroupBooking> {
-  final _formKey = GlobalKey<FormState>(); // Define a GlobalKey for the form
+  final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _reservationController = TextEditingController();
   final TextEditingController _checkInController = TextEditingController();
-  final TextEditingController _durationController = TextEditingController();
+  final TextEditingController _checkoutController = TextEditingController();
   final TextEditingController _roomTotalController = TextEditingController();
   final TextEditingController _roomTypeController = TextEditingController();
 
@@ -24,9 +25,33 @@ class _GroupBookingState extends State<GroupBooking> {
   bool _isChecked3 = false;
   bool _isChecked4 = false;
 
+  List<DateTime?> _dialogCalendarPickerValue = [];
+  int _durationInDays = 0;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  String _getValueText(CalendarDatePicker2Type datePickerType, List<DateTime?> values) {
+    values = values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
+    var valueText = (values.isNotEmpty ? values[0] : null).toString().replaceAll('00:00:00.000', '');
+
+    if (datePickerType == CalendarDatePicker2Type.multi) {
+      valueText = values.isNotEmpty
+          ? values.map((v) => v.toString().replaceAll('00:00:00.000', '')).join(', ')
+          : 'null';
+    } else if (datePickerType == CalendarDatePicker2Type.range) {
+      if (values.isNotEmpty) {
+        final startDate = values[0].toString().replaceAll('00:00:00.000', '');
+        final endDate = values.length > 1 ? values[1].toString().replaceAll('00:00:00.000', '') : 'null';
+        valueText = '$startDate to $endDate';
+      } else {
+        return 'null';
+      }
+    }
+
+    return valueText;
   }
 
   @override
@@ -46,8 +71,8 @@ class _GroupBookingState extends State<GroupBooking> {
           'Group Booking',
           style: TextStyle(
             fontFamily: 'Jakarta',
-            fontWeight: FontWeight.bold, // Medium
-            fontSize: 18, // Ukuran font yang Anda inginkan
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
         ),
         centerTitle: true,
@@ -63,7 +88,7 @@ class _GroupBookingState extends State<GroupBooking> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
-              key: _formKey, // Assign the key to the form
+              key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -73,12 +98,11 @@ class _GroupBookingState extends State<GroupBooking> {
                   _buildRoomNumbers(),
                   SizedBox(height: 20),
                   TextButton(
-                    //buat next
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => BookingSummary()),
+                          MaterialPageRoute(builder: (context) => GroupNext()),
                         );
                       }
                     },
@@ -88,9 +112,10 @@ class _GroupBookingState extends State<GroupBooking> {
                         style: TextStyle(
                           fontFamily: 'Jakarta',
                           fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                          color: Colors.white,
+                        ),
                       ),
-                      padding: EdgeInsets.fromLTRB(100, 20, 100, 20), // jarak ke dalam
+                      padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
                       decoration: BoxDecoration(
                         color: Color(0xFF4C4DDC),
                         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -108,6 +133,11 @@ class _GroupBookingState extends State<GroupBooking> {
   }
 
   Widget _buildDropdown() {
+    final config = CalendarDatePicker2WithActionButtonsConfig(
+      calendarType: CalendarDatePicker2Type.range,
+      disableModePicker: true,
+    );
+
     return Column(
       children: [
         ListTile(
@@ -121,7 +151,7 @@ class _GroupBookingState extends State<GroupBooking> {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 1,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: Offset(0, 3),
                 ),
               ],
             ),
@@ -152,56 +182,68 @@ class _GroupBookingState extends State<GroupBooking> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
-                  child: CustomDropdown(
-                    hintText: 'Check-in',
-                    items: ['Morning', 'Afternoon', 'Evening'],
-                    controller: _checkInController,
-                    onChanged: (value) {
-                      setState(() {
-                        _checkInController.text = value;
-                      });
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final values = await showCalendarDatePicker2Dialog(
+                        context: context,
+                        config: config,
+                        dialogSize: const Size(325, 400),
+                        borderRadius: BorderRadius.circular(15),
+                        value: _dialogCalendarPickerValue,
+                        dialogBackgroundColor: Colors.white,
+                      );
+                      if (values != null) {
+                        setState(() {
+                          _dialogCalendarPickerValue = values;
+                          _checkInController.text = _dialogCalendarPickerValue.isNotEmpty ? _dialogCalendarPickerValue[0]?.toString().split(' ')[0] ?? '' : '';
+                          _checkoutController.text = _dialogCalendarPickerValue.length > 1 ? _dialogCalendarPickerValue[1]?.toString().split(' ')[0] ?? '' : '';
+                          _durationInDays = _dialogCalendarPickerValue.length > 1
+                              ? _dialogCalendarPickerValue[1]!.difference(_dialogCalendarPickerValue[0]!).inDays
+                              : 0;
+                        });
+                      }
                     },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+                    child: Text(
+                      'Select Check-in and Check-out Dates',
+                      style: TextStyle(
+                        fontFamily: 'Jakarta',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                    ],
-                  ),
-                  child: CustomDropdown(
-                    hintText: 'Duration',
-                    items: ['1 Day', '2 Days', '3 Days', '4 Days'],
-                    controller: _durationController,
-                    onChanged: (value) {
-                      setState(() {
-                        _durationController.text = value;
-                      });
-                    },
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 11),
+        if (_checkInController.text.isNotEmpty || _checkoutController.text.isNotEmpty)
+          Column(
+            children: [
+              Text(
+                'Check-in: ${_checkInController.text}, Check-out: ${_checkoutController.text}',
+                style: TextStyle(
+                  fontFamily: 'Jakarta',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                'Duration: $_durationInDays days',
+                style: TextStyle(
+                  fontFamily: 'Jakarta',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -217,7 +259,7 @@ class _GroupBookingState extends State<GroupBooking> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
@@ -234,24 +276,7 @@ class _GroupBookingState extends State<GroupBooking> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Text(
-                  'Check out: ${_roomTotalController.text}', // Display selected size as text
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
+            SizedBox(width: 1),
             Expanded(
               child: ListTile(
                 title: Container(
@@ -264,13 +289,13 @@ class _GroupBookingState extends State<GroupBooking> {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 1,
                         blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
                   child: CustomDropdown(
                     hintText: 'Room Type',
-                    items: ['Single', 'Double', 'Suite'],
+                    items: ['Deluxe Room', 'Suite Room', 'Standard Room'],
                     controller: _roomTypeController,
                     onChanged: (value) {
                       setState(() {
@@ -281,6 +306,13 @@ class _GroupBookingState extends State<GroupBooking> {
                 ),
               ),
             ),
+          ],
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            
             SizedBox(width: 8),
           ],
         ),

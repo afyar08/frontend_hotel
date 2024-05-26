@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend_hotel/pages/frontdesk/booking/Individual.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/group_next.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/group.dart';
 import 'package:frontend_hotel/pages/frontdesk/detail_room.dart';
 import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
@@ -30,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => NewBooking()));
+          .pushReplacement(MaterialPageRoute(builder: (_) => GroupBooking()));
     });
   }
 
