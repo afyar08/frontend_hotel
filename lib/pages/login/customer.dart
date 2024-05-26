@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // for jsonEncode
+
 import 'package:frontend_hotel/pages/password/forgotpassword.dart';
 import 'package:frontend_hotel/pages/registration/customer_registration.dart';
+import 'package:frontend_hotel/pages/customer/customer_dashboard.dart';
 
 class Customer extends StatefulWidget {
   const Customer({Key? key}) : super(key: key);
@@ -19,12 +23,55 @@ class _CustomerState extends State<Customer> {
   bool _isEmailFilled = false;
   bool _isPasswordFilled = false;
 
-  void _trySubmit() {
+  Future<void> _trySubmit() async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
-      // handle login here
+
+      final response = await http.post(
+        Uri.parse('http://127.0.0.1:8000/api/guest/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Login successful
+        final responseData = jsonDecode(response.body);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomerDashboard(),
+          ),
+        );
+      } else {
+        // Login failed
+        final responseData = jsonDecode(response.body);
+        _showErrorDialog();
+      }
     }
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Login Failed'),
+        content: Text('Email atau password salah. Mohon coba lagi.'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void _forgotPassword() {
