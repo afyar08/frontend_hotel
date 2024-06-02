@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import untuk menggunakan TextInputFormatter
 import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/individual.dart';
 
 class GroupNext extends StatefulWidget {
   const GroupNext({Key? key}) : super(key: key);
@@ -12,13 +13,19 @@ class GroupNext extends StatefulWidget {
 class _GroupNext extends State<GroupNext> {
   final _formKey = GlobalKey<FormState>(); // Define a GlobalKey for the form
 
-  String _selectedOption = 'Option 1'; // Initialize the selected dropdown option
-  String _selectedCheckIn = 'Morning'; // Initialize the selected check-in option
-  String _selectedDuration = '1 Hour'; // Initialize the selected duration option
-  String _selectedRoomType = 'Single'; // Initialize the selected room type option
+  String _selectedOption =
+      'Option 1'; // Initialize the selected dropdown option
+  String _selectedCheckIn =
+      'Morning'; // Initialize the selected check-in option
+  String _selectedDuration =
+      '1 Hour'; // Initialize the selected duration option
+  String _selectedRoomType =
+      'Single'; // Initialize the selected room type option
   String _selectedSize = 'Standard'; // Initialize the selected size option
-  String _selectedRoomNumber = '101'; // Initialize the selected room number option
-  String _selectedRoomPlan = 'Standard'; // Initialize the selected room plan option
+  String _selectedRoomNumber =
+      '101'; // Initialize the selected room number option
+  String _selectedRoomPlan =
+      'Standard'; // Initialize the selected room plan option
   int _selectedAdults = 1; // Initialize the selected number of adults
   int _selectedChildren = 0; // Initialize the selected number of children
   String _lastName = ''; // Initialize the last name field
@@ -28,7 +35,8 @@ class _GroupNext extends State<GroupNext> {
   String _email = ''; // Initialize the email field
   String _phoneNumber = ''; // Initialize the phone number field
   String _request = ''; // Initialize the request field
-  String _selectedPaymentType = 'Cash'; // Initialize the selected payment type option
+  String _selectedPaymentType =
+      'Cash'; // Initialize the selected payment type option
   String _selectedBank = 'Bank A'; // Initialize the selected bank option
   String _cardNumber = ''; // Initialize the card number field
 
@@ -361,7 +369,6 @@ class _GroupNext extends State<GroupNext> {
               ),
             ),
             SizedBox(width: 8),
-            
           ],
         ),
         SizedBox(height: 10),
@@ -397,8 +404,10 @@ class _GroupNext extends State<GroupNext> {
           title: TextFormField(
             keyboardType: TextInputType.number, // Set keyboard type ke number
             inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly, // Hanya menerima input digit
-              LengthLimitingTextInputFormatter(13), // Batasi panjang input hingga 13 karakter
+              FilteringTextInputFormatter
+                  .digitsOnly, // Hanya menerima input digit
+              LengthLimitingTextInputFormatter(
+                  13), // Batasi panjang input hingga 13 karakter
             ],
             decoration: InputDecoration(
               labelText: 'Phone Number',
@@ -529,10 +538,10 @@ class _GroupNext extends State<GroupNext> {
               style: TextStyle(
                 fontFamily: 'Jakarta',
                 fontWeight: FontWeight.bold,
-                color: Colors.white,),
+                color: Colors.white,
+              ),
             ),
-            padding: EdgeInsets.fromLTRB(
-                100, 20, 100, 20), // jarak ke dalam
+            padding: EdgeInsets.fromLTRB(100, 20, 100, 20), // jarak ke dalam
             decoration: BoxDecoration(
               color: Color(0xFF4C4DDC),
               borderRadius: BorderRadius.all(Radius.circular(8)),
