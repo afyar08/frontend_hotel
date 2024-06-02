@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import untuk menggunakan TextInputFormatter
+import 'package:flutter/services.dart';
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
 
 class GroupNext extends StatefulWidget {
@@ -10,27 +11,65 @@ class GroupNext extends StatefulWidget {
 }
 
 class _GroupNext extends State<GroupNext> {
-  final _formKey = GlobalKey<FormState>(); // Define a GlobalKey for the form
+  final _formKey = GlobalKey<FormState>();
 
-  String _selectedOption = 'Option 1'; // Initialize the selected dropdown option
-  String _selectedCheckIn = 'Morning'; // Initialize the selected check-in option
-  String _selectedDuration = '1 Hour'; // Initialize the selected duration option
-  String _selectedRoomType = 'Single'; // Initialize the selected room type option
-  String _selectedSize = 'Standard'; // Initialize the selected size option
-  String _selectedRoomNumber = '101'; // Initialize the selected room number option
-  String _selectedRoomPlan = 'Standard'; // Initialize the selected room plan option
-  int _selectedAdults = 1; // Initialize the selected number of adults
-  int _selectedChildren = 0; // Initialize the selected number of children
-  String _lastName = ''; // Initialize the last name field
-  String _firstName = ''; // Initialize the first name field
-  String _selectedTitle = 'Mr.'; // Initialize the selected title option
-  String _selectedMember = 'Yes'; // Initialize the selected member option
-  String _email = ''; // Initialize the email field
-  String _phoneNumber = ''; // Initialize the phone number field
-  String _request = ''; // Initialize the request field
-  String _selectedPaymentType = 'Cash'; // Initialize the selected payment type option
-  String _selectedBank = 'Bank A'; // Initialize the selected bank option
-  String _cardNumber = ''; // Initialize the card number field
+  String _selectedRoomPlan = '';
+  String _selectedAdults = '';
+  String _selectedChildren = '';
+  String _lastName = '';
+  String _firstName = '';
+  String _selectedTitle = '';
+  String _email = '';
+  String _phoneNumber = '';
+  String _request = '';
+  String _selectedPaymentType = '';
+  String _selectedBank = '';
+  String _cardNumber = '';
+
+  final TextEditingController _roomPlanController = TextEditingController();
+  final TextEditingController _adultsController = TextEditingController();
+  final TextEditingController _childrenController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _paymentTypeController = TextEditingController();
+  final TextEditingController _bankController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  InputDecoration _inputDecoration(String labelText) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: TextStyle(color: Colors.black),
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide.none,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide.none,
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide.none,
+      ),
+      errorStyle: TextStyle(color: Colors.red),
+      isDense: true,
+      hintStyle: TextStyle(color: Colors.grey),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +85,11 @@ class _GroupNext extends State<GroupNext> {
           ),
         ),
         title: Text(
-          'Individual Booking',
+          'Group Booking',
           style: TextStyle(
             fontFamily: 'Jakarta',
-            fontWeight: FontWeight.bold, // Medium
-            fontSize: 18, // Ukuran font yang Anda inginkan
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
         ),
         centerTitle: true,
@@ -66,12 +105,14 @@ class _GroupNext extends State<GroupNext> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Form(
-              key: _formKey, // Assign the key to the form
+              key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 20),
                   _buildDropdown(),
+                  SizedBox(height: 20),
+                  _buildBookingButton(),
                 ],
               ),
             ),
@@ -86,26 +127,27 @@ class _GroupNext extends State<GroupNext> {
       children: [
         ListTile(
           title: Container(
-            height: 55,
-            child: DropdownButtonFormField<String>(
-              value: _selectedOption,
-              decoration: InputDecoration(
-                labelText: 'Reservation by',
-                border: OutlineInputBorder(),
-              ),
-              items: <String>[
-                'Option 1',
-                'Option 2',
-                'Option 3',
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: CustomDropdown(
+              hintText: 'Select Room plan',
+              items: ['Room only', 'Room with breakfast', 'Full service'],
+              controller: _roomPlanController,
+              onChanged: (value) {
                 setState(() {
-                  _selectedOption = newValue!;
+                  _selectedRoomPlan = value;
+                  _roomPlanController.text = value;
                 });
               },
             ),
@@ -117,26 +159,27 @@ class _GroupNext extends State<GroupNext> {
             Expanded(
               child: ListTile(
                 title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedCheckIn,
-                    decoration: InputDecoration(
-                      labelText: 'Check-in',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Morning',
-                      'Afternoon',
-                      'Evening',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: CustomDropdown(
+                    hintText: 'Select Adults',
+                    items: ['1 Adult', '2 Adults', '3 Adults'],
+                    controller: _adultsController,
+                    onChanged: (value) {
                       setState(() {
-                        _selectedCheckIn = newValue!;
+                        _selectedAdults = value;
+                        _adultsController.text = value;
                       });
                     },
                   ),
@@ -147,139 +190,27 @@ class _GroupNext extends State<GroupNext> {
             Expanded(
               child: ListTile(
                 title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedDuration,
-                    decoration: InputDecoration(
-                      labelText: 'Duration',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      '1 Hour',
-                      '2 Hours',
-                      '3 Hours',
-                      '4 Hours',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedDuration = newValue!;
-                      });
-                    },
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedRoomType,
-                    decoration: InputDecoration(
-                      labelText: 'Room Type',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Single',
-                      'Double',
-                      'Suite',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
+                  child: CustomDropdown(
+                    hintText: 'Select Children',
+                    items: ['1 Child', '2 Children', '3 Children', '4 Children'],
+                    controller: _childrenController,
+                    onChanged: (value) {
                       setState(() {
-                        _selectedRoomType = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Text(
-                  'Check out: $_selectedSize', // Display selected size as text
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedRoomNumber,
-                    decoration: InputDecoration(
-                      labelText: 'Room Number',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      '101',
-                      '102',
-                      '103',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedRoomNumber = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedRoomPlan,
-                    decoration: InputDecoration(
-                      labelText: 'Room Plan',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Standard',
-                      'Deluxe',
-                      'Premium',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedRoomPlan = newValue!;
+                        _selectedChildren = value;
+                        _childrenController.text = value;
                       });
                     },
                   ),
@@ -291,7 +222,7 @@ class _GroupNext extends State<GroupNext> {
         SizedBox(height: 10),
         ListTile(
           title: Text(
-            'Guest Detail', // Title for the section
+            'Guest Detail',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -300,253 +231,308 @@ class _GroupNext extends State<GroupNext> {
         ),
         SizedBox(height: 10),
         ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Last Name',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _lastName = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 5),
-        ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'First Name',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _firstName = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedTitle,
-                    decoration: InputDecoration(
-                      labelText: 'Title',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Mr.',
-                      'Mrs.',
-                      'Ms.',
-                      'Miss',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedTitle = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            
-          ],
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Other',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _email = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 30),
-        ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _email = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 5),
-        ListTile(
-          title: TextFormField(
-            keyboardType: TextInputType.number, // Set keyboard type ke number
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly, // Hanya menerima input digit
-              LengthLimitingTextInputFormatter(13), // Batasi panjang input hingga 13 karakter
-            ],
-            decoration: InputDecoration(
-              labelText: 'Phone Number',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _phoneNumber = value;
-              });
-            },
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Number is required';
-              } else if (value.length != 13) {
-                return 'Format tidak sesuai';
-              }
-              return null;
-            },
-          ),
-        ),
-        SizedBox(height: 5),
-        ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Guest Comment/Request',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _request = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedPaymentType,
-                    decoration: InputDecoration(
-                      labelText: 'Payment Type',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Cash',
-                      'Credit Card',
-                      'Debit Card',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedPaymentType = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  height: 55,
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedBank,
-                    decoration: InputDecoration(
-                      labelText: 'Bank',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: <String>[
-                      'Bank A',
-                      'Bank B',
-                      'Bank C',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedBank = newValue!;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Card Number',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _cardNumber = value;
-              });
-            },
-          ),
-        ),
-        SizedBox(height: 20),
-        TextButton(
-          //buat next
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BookingSummary()),
-              );
-            }
-          },
-          child: Container(
-            child: Text(
-              'Booking',
-              style: TextStyle(
-                fontFamily: 'Jakarta',
-                fontWeight: FontWeight.bold,
-                color: Colors.white,),
-            ),
-            padding: EdgeInsets.fromLTRB(
-                100, 20, 100, 20), // jarak ke dalam
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
-              color: Color(0xFF4C4DDC),
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              decoration: _inputDecoration('Last Name'),
+              onChanged: (value) {
+                setState(() {
+                  _lastName = value;
+                });
+              },
             ),
           ),
         ),
-        SizedBox(height: 20),
+        SizedBox(height: 5),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              decoration: _inputDecoration('First Name'),
+              onChanged: (value) {
+                setState(() {
+                  _firstName = value;
+                });
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: ListTile(
+                title: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: CustomDropdown(
+                    hintText: 'Select Title',
+                    items: ['Mr.', 'Mrs.', 'Ms.', 'Miss'],
+                    controller: _titleController,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTitle = value;
+                        _titleController.text = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+          ],
+        ),
+        SizedBox(height: 10),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              decoration: _inputDecoration('Email Address'),
+              keyboardType: TextInputType.emailAddress,
+              onChanged: (value) {
+                setState(() {
+                  _email = value;
+                });
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 5),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              decoration: _inputDecoration('Phone Number'),
+              keyboardType: TextInputType.phone,
+              onChanged: (value) {
+                setState(() {
+                  _phoneNumber = value;
+                });
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 5),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              decoration: _inputDecoration('Guest Comment/Request'),
+              onChanged: (value) {
+                setState(() {
+                  _request = value;
+                });
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: ListTile(
+                title: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: CustomDropdown(
+                    hintText: 'Select Payment type',
+                    items: ['Cash', 'Credit', 'Debit'],
+                    controller: _paymentTypeController,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPaymentType = value;
+                        _paymentTypeController.text = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ListTile(
+                title: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: CustomDropdown(
+                    hintText: 'Select Bank',
+                    items: ['Bank A', 'Bank B', 'Bank C'],
+                    controller: _bankController,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBank = value;
+                        _bankController.text = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 10),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: TextFormField(
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(16),
+              ],
+              decoration: _inputDecoration('Card Number'),
+              onChanged: (value) {
+                setState(() {
+                  _cardNumber = value;
+                });
+              },
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Number is required';
+                } else if (value.length != 16) {
+                  return 'Format tidak sesuai';
+                }
+                return null;
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
-}
 
-void main() {
-  runApp(MaterialApp(
-    home: IndividualBooking(),
-  ));
+  Widget _buildBookingButton() {
+    return TextButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => BookingSummary()),
+          );
+        }
+      },
+      child: Container(
+        child: Text(
+          'Booking',
+          style: TextStyle(
+            fontFamily: 'Jakarta',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+        decoration: BoxDecoration(
+          color: Color(0xFF4C4DDC),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
+        ),
+      ),
+    );
+  }
 }

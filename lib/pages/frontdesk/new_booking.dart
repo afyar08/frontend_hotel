@@ -14,7 +14,7 @@ class _NewBookingState extends State<NewBooking> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Booking'),
+        
       ),
       body: Center(
         child: Container(

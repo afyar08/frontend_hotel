@@ -157,7 +157,7 @@ class _GroupBookingState extends State<GroupBooking> {
             ),
             child: CustomDropdown(
               hintText: 'Reservation by',
-              items: ['Option 1', 'Option 2', 'Option 3'],
+              items: ['Online', 'Walk-in'],
               controller: _reservationController,
               onChanged: (value) {
                 setState(() {
