@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
+import 'package:frontend_hotel/pages/frontdesk/booking/individual.dart';
 
 class GroupNext extends StatefulWidget {
   const GroupNext({Key? key}) : super(key: key);
