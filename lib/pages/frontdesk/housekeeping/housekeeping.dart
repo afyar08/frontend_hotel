@@ -11,6 +11,7 @@ class HouseKeeping extends StatefulWidget {
 }
 
 class Room {
+  final int id;
   final String status_kamar;
   final String status_reservasi;
   final double harga;
@@ -18,6 +19,7 @@ class Room {
   final String roomType;
 
   Room({
+    required this.id,
     required this.status_kamar,
     required this.status_reservasi,
     required this.harga,
@@ -27,6 +29,7 @@ class Room {
 
   factory Room.fromJson(Map<String, dynamic> json) {
     return Room(
+      id: json['id'],
       status_kamar: json['status_kamar'],
       status_reservasi: json['status_reservasi'],
       harga: double.parse(json['harga']),
@@ -69,6 +72,10 @@ class _HouseKeepingState extends State<HouseKeeping> {
     } catch (e) {
       print('Error fetching rooms: $e');
     }
+  }
+
+  void _refreshRooms() {
+    fetchRooms();
   }
 
   void updateSearch(String searchText) {
@@ -282,6 +289,7 @@ class _HouseKeepingState extends State<HouseKeeping> {
                             context: context,
                             builder: (BuildContext context) {
                               return ChangeStatusDialog(
+                                roomId: room.id,
                                 roomNumber: room.no_kamar,
                                 roomType: room.roomType,
                               );
@@ -292,6 +300,7 @@ class _HouseKeepingState extends State<HouseKeeping> {
                               print('Selected Status: $selectedStatus');
                             }
                           });
+                          // untuk refresh disini tapi blom
                         },
                         child: Text(room.status_kamar),
                       ),
