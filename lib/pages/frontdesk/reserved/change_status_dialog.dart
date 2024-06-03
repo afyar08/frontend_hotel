@@ -55,7 +55,10 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Room status updated successfully')),
       );
-      Navigator.of(context).pop(true); // Return true to indicate success
+
+      _selectedStatus = ''; // Reset selected status
+
+      Navigator.of(context).pop(true); // Close dialog after showing snackbar
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update room status')),

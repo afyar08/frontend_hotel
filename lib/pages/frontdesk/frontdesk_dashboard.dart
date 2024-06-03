@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_hotel/pages/frontdesk/available_status.dart';
+import 'package:frontend_hotel/pages/frontdesk/available/available_status.dart';
 import 'package:frontend_hotel/pages/frontdesk/guest_list/guest_list.dart';
 import 'package:frontend_hotel/pages/home.dart' as mainHome;
 import 'package:frontend_hotel/pages/frontdesk/home.dart';

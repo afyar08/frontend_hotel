@@ -16,6 +16,7 @@ import 'package:frontend_hotel/pages/frontdesk/housekeeping/housekeeping.dart';
 import 'package:frontend_hotel/pages/frontdesk/housekeeping/change_status_dialog.dart';
 import 'package:frontend_hotel/pages/frontdesk/inhouse_guest.dart';
 import 'package:frontend_hotel/pages/frontdesk/reserved/reserved.dart';
+import 'package:frontend_hotel/pages/frontdesk/available/available_status.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,8 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (_) => Home1()));
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => AvailableStatus()));
     });
   }
 
