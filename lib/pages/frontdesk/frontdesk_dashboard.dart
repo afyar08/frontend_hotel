@@ -6,7 +6,7 @@ import 'package:frontend_hotel/pages/frontdesk/home.dart';
 import 'package:frontend_hotel/pages/frontdesk/housekeeping/housekeeping.dart';
 import 'package:frontend_hotel/pages/frontdesk/inhouse_guest.dart';
 import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
-import 'package:frontend_hotel/pages/frontdesk/reserved_status.dart';
+import 'package:frontend_hotel/pages/frontdesk/reserved/reserved.dart';
 import 'package:frontend_hotel/pages/login/frontoffice.dart';
 import 'package:http/http.dart';
 
@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     NewBooking(),
     GuestList(),
     InHouseGuest(),
-    ReservedStatus(),
+    ReservedRooms(),
     AvailableStatus(),
     HouseKeeping(),
   ];

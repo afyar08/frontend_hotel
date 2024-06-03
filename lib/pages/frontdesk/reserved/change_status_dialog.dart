@@ -24,11 +24,11 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
 
   // List of status options
   final List<String> _statusOptions = [
-    'Clean',
-    'Dirty',
-    'Pickup',
-    'Inspected',
-    'Out of Order',
+    'Check In',
+    'Check Out',
+    'Reserved',
+    'Cancelled',
+    'Out Of Order'
   ];
 
   Future<void> _updateRoomStatus() async {
@@ -37,12 +37,13 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
     });
 
     final response = await http.put(
-      Uri.parse('http://localhost:8000/api/kamar/status/${widget.roomId}'),
+      Uri.parse('http://localhost:8000/api/kamar/r-status/${widget.roomId}'),
       headers: {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'status_kamar': _selectedStatus.toLowerCase(), // Convert to lowercase
+        'status_reservasi':
+            _selectedStatus.toLowerCase(), // Convert to lowercase
       }),
     );
 
