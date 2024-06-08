@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'guest_list.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class GuestDetailPage extends StatefulWidget {
@@ -23,14 +24,25 @@ class GuestDetail {
   final int children;
   final double extra;
   final double subTotal;
+  final double harga_per_kamar;
 
-  GuestDetail(this.room_plan, this.reservation_by, this.request, this.duration,
-      this.roomTotal, this.adult, this.children, this.extra, this.subTotal);
+  GuestDetail(
+      this.room_plan,
+      this.reservation_by,
+      this.request,
+      this.duration,
+      this.roomTotal,
+      this.adult,
+      this.children,
+      this.extra,
+      this.subTotal,
+      this.harga_per_kamar);
 }
 
 class _GuestDetailPageState extends State<GuestDetailPage> {
   GuestDetail? _guestDetail;
-
+  NumberFormat rupiahFormat =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ');
   @override
   void initState() {
     super.initState();
@@ -58,6 +70,7 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
             responseData['children'],
             double.parse(responseData['extra']),
             double.parse(responseData['sub_total']),
+            double.parse(responseData['harga_per_kamar']),
           );
         });
       } else {
@@ -100,12 +113,19 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Center(
-                    child: Text(
-                      'No Photo',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
+                  child: widget.guest.roomTypeImage.isNotEmpty
+                      ? Image.network(
+                          widget.guest.roomTypeImage,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Text(
+                            'No Photo',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
                 ),
                 SizedBox(width: 16.0),
                 Expanded(
@@ -147,9 +167,12 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    DateFormat('dd MMMM yyyy').format(widget.guest.checkInDate),
-                  ),
+                  _guestDetail != null
+                      ? Text(
+                          DateFormat('dd MMMM yyyy')
+                              .format(widget.guest.checkInDate),
+                        )
+                      : CircularProgressIndicator(),
                   SizedBox(height: 8),
                   Text(
                     'Guest',
@@ -181,9 +204,11 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    widget.guest.status,
-                  ),
+                  _guestDetail != null
+                      ? Text(
+                          widget.guest.status,
+                        )
+                      : CircularProgressIndicator(),
                 ],
               ),
               Column(
@@ -196,10 +221,12 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    DateFormat('dd MMMM yyyy')
-                        .format(widget.guest.checkOutDate),
-                  ),
+                  _guestDetail != null
+                      ? Text(
+                          DateFormat('dd MMMM yyyy')
+                              .format(widget.guest.checkOutDate),
+                        )
+                      : CircularProgressIndicator(),
                   SizedBox(height: 8),
                   Text(
                     'Room type',
@@ -208,9 +235,11 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    widget.guest.roomType,
-                  ),
+                  _guestDetail != null
+                      ? Text(
+                          widget.guest.roomType,
+                        )
+                      : CircularProgressIndicator(),
                   SizedBox(height: 8),
                   Text(
                     'Room number',
@@ -219,9 +248,11 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                       fontSize: 20,
                     ),
                   ),
-                  Text(
-                    widget.guest.roomNumber,
-                  ),
+                  _guestDetail != null
+                      ? Text(
+                          widget.guest.roomNumber,
+                        )
+                      : CircularProgressIndicator(),
                   SizedBox(height: 8),
                   Text('Reservation by',
                       style:
@@ -285,14 +316,18 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                                     'Room Total (${_guestDetail?.roomTotal ?? "Loading..."})'),
                                 SizedBox(height: 4),
                                 Text(
-                                    'Extras (${_guestDetail?.extra ?? "Loading..."})'),
+                                  'Duration: ', // Duration
+                                ),
+                                SizedBox(height: 4),
+                                Text('Extras '),
                                 SizedBox(height: 14),
+                                Text('Subtotal '),
+                                SizedBox(height: 4),
                                 Text(
-                                    'Subtotal (${_guestDetail?.subTotal ?? "Loading..."})'),
+                                    'Discount: '), // Assuming discount is not provided
                                 SizedBox(height: 4),
-                                Text('Discount'),
-                                SizedBox(height: 4),
-                                Text('Fixed Amount Taxes'),
+                                Text(
+                                    'Fixed Amount Taxes: '), // Assuming taxes are not provided
                                 SizedBox(height: 4),
                                 Text(
                                   'Total',
@@ -311,24 +346,53 @@ class _GuestDetailPageState extends State<GuestDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 SizedBox(height: 4),
-                                Text('harga satuan kali room total'),
+                                _guestDetail != null
+                                    ? Text(
+                                        rupiahFormat.format(
+                                            _guestDetail?.harga_per_kamar ?? 0),
+                                      )
+                                    : Text('Loading...'), // price per room
                                 SizedBox(height: 4),
-                                Text('Harga layanan tambahan'),
+                                _guestDetail != null
+                                    ? Text(
+                                        '${_guestDetail?.duration ?? "Loading..."} days')
+                                    : Text('Loading...'), // price per room
+                                SizedBox(height: 4),
+                                _guestDetail != null
+                                    ? Text(
+                                        rupiahFormat
+                                            .format(_guestDetail?.extra ?? 0),
+                                      )
+                                    : Text('Loading...'), // additional charges
                                 SizedBox(height: 14),
-                                Text('sub total roomtotal + extra'),
+                                _guestDetail != null
+                                    ? Text(
+                                        rupiahFormat.format(
+                                            _guestDetail?.subTotal ?? 0),
+                                      )
+                                    : Text(
+                                        'Loading...'), // total before discounts and taxes
                                 SizedBox(height: 4),
-                                Text('total diskon'),
+                                Text('0'), // Assuming no discount
                                 SizedBox(height: 4),
-                                Text('total pajak'),
+                                Text('0'), // Assuming no taxes
                                 SizedBox(height: 4),
-                                Text(
-                                  'sub total - diskon + pajak',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Colors.red,
-                                  ),
-                                )
+                                _guestDetail != null
+                                    ? Text(
+                                        rupiahFormat.format(
+                                            _guestDetail?.subTotal ??
+                                                0), // final total
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.red,
+                                        ))
+                                    : Text('Loading...',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Colors.red,
+                                        ))
                               ],
                             ),
                           ),

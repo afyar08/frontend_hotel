@@ -65,6 +65,8 @@ class _HouseKeepingState extends State<HouseKeeping> {
         setState(() {
           _initialRooms = data.map((json) => Room.fromJson(json)).toList();
           _rooms = _initialRooms;
+          _rooms.sort((a, b) => a.no_kamar.compareTo(b.no_kamar));
+          updateSearch('');
         });
       } else {
         throw Exception('Failed to load rooms');
@@ -127,14 +129,15 @@ class _HouseKeepingState extends State<HouseKeeping> {
           roomId: roomId,
           roomNumber: roomNumber,
           roomType: roomType,
+          onUpdateStatus: (success) {
+            if (success) {
+              // Refresh daftar kamar setelah status berhasil diperbarui
+              fetchRooms();
+            }
+          },
         );
       },
     );
-
-    if (result == true) {
-      // Refresh daftar kamar setelah status berhasil diperbarui
-      fetchRooms();
-    }
   }
 
   @override

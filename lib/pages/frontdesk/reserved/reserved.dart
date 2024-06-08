@@ -120,14 +120,15 @@ class _ReservedRoomsState extends State<ReservedRooms> {
           roomId: roomId,
           roomNumber: roomNumber,
           roomType: roomType,
+          onUpdateStatus: (success) {
+            if (success) {
+              // Refresh daftar kamar setelah status berhasil diperbarui
+              fetchRooms();
+            }
+          },
         );
       },
     );
-
-    if (result == true) {
-      // Refresh daftar kamar setelah status berhasil diperbarui
-      fetchRooms();
-    }
   }
 
   @override

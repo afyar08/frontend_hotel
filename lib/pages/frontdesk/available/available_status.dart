@@ -67,6 +67,7 @@ class _AvailableStatusState extends State<AvailableStatus> {
                   (room.status_reservasi != 'reserved' &&
                       room.status_reservasi != 'check in'))
               .toList();
+          _rooms.sort((a, b) => a.no_kamar.compareTo(b.no_kamar));
         });
       } else {
         throw Exception('Failed to load rooms');

@@ -18,9 +18,10 @@ class Guest {
   final String status;
   final DateTime checkInDate;
   final DateTime checkOutDate;
+  final String roomTypeImage;
 
   Guest(this.name, this.roomNumber, this.roomType, this.bookId, this.status,
-      this.checkInDate, this.checkOutDate);
+      this.checkInDate, this.checkOutDate, this.roomTypeImage);
 }
 
 class _GuestListState extends State<GuestList> {
@@ -47,14 +48,14 @@ class _GuestListState extends State<GuestList> {
       final List<dynamic> responseData = json.decode(response.body);
       List<Guest> guests = responseData.map((data) {
         return Guest(
-          data['name'],
-          data['roomNumber'],
-          data['roomType'],
-          data['bookId'].toString(),
-          data['status'],
-          DateTime.parse(data['checkInDate']),
-          DateTime.parse(data['checkOutDate']),
-        );
+            data['name'],
+            data['roomNumber'],
+            data['roomType'],
+            data['bookId'].toString(),
+            data['status'],
+            DateTime.parse(data['checkInDate']),
+            DateTime.parse(data['checkOutDate']),
+            data['roomTypeImage']);
       }).toList();
 
       setState(() {
