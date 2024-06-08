@@ -95,6 +95,8 @@ class _HouseKeepingState extends State<HouseKeeping> {
               activeStatuses.contains(room.status_kamar);
           return matchesSearchText && matchesStatus;
         }).toList();
+        _rooms.sort((a, b) =>
+            a.no_kamar.compareTo(b.no_kamar)); // Sorting rooms by no_kamar
       }
     });
   }
