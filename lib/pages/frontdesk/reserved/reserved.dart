@@ -64,6 +64,8 @@ class _ReservedRoomsState extends State<ReservedRooms> {
                   room.status_reservasi == 'reserved' ||
                   room.status_reservasi == 'check in')
               .toList();
+          _rooms.sort((a, b) =>
+              a.no_kamar.compareTo(b.no_kamar)); // Sorting rooms by no_kamar
         });
       } else {
         throw Exception('Failed to load rooms');
@@ -82,6 +84,8 @@ class _ReservedRoomsState extends State<ReservedRooms> {
                 room.status_reservasi == 'reserved' ||
                 room.status_reservasi == 'check in')
             .toList();
+        _rooms.sort((a, b) =>
+            a.no_kamar.compareTo(b.no_kamar)); // Sorting rooms by no_kamar
       } else {
         _isSearching = true;
         _rooms = _initialRooms
@@ -90,6 +94,8 @@ class _ReservedRoomsState extends State<ReservedRooms> {
                 (room.status_reservasi == 'reserved' ||
                     room.status_reservasi == 'check in'))
             .toList();
+        _rooms.sort((a, b) =>
+            a.no_kamar.compareTo(b.no_kamar)); // Sorting rooms by no_kamar
       }
     });
   }

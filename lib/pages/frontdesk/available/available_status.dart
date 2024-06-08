@@ -61,9 +61,11 @@ class _AvailableStatusState extends State<AvailableStatus> {
           _initialRooms = data.map((json) => Room.fromJson(json)).toList();
           _rooms = _initialRooms
               .where((room) =>
-                  room.status_kamar == 'clean' ||
-                  room.status_kamar == 'inspected' ||
-                  room.status_kamar == 'dirty')
+                  (room.status_kamar == 'clean' ||
+                      room.status_kamar == 'inspected' ||
+                      room.status_kamar == 'dirty') &&
+                  (room.status_reservasi != 'reserved' &&
+                      room.status_reservasi != 'check in'))
               .toList();
         });
       } else {
@@ -80,9 +82,11 @@ class _AvailableStatusState extends State<AvailableStatus> {
         _isSearching = false;
         _rooms = _initialRooms
             .where((room) =>
-                room.status_kamar == 'clean' ||
-                room.status_kamar == 'inspected' ||
-                room.status_kamar == 'dirty')
+                (room.status_kamar == 'clean' ||
+                    room.status_kamar == 'inspected' ||
+                    room.status_kamar == 'dirty') &&
+                (room.status_reservasi != 'reserved' &&
+                    room.status_reservasi != 'check in'))
             .toList();
       } else {
         _isSearching = true;
@@ -91,7 +95,9 @@ class _AvailableStatusState extends State<AvailableStatus> {
                 (room.status_kamar == 'clean' ||
                     room.status_kamar == 'inspected' ||
                     room.status_kamar == 'dirty') &&
-                room.no_kamar.toLowerCase().contains(searchText))
+                (room.status_reservasi != 'reserved' &&
+                    room.status_reservasi != 'check in') &&
+                room.no_kamar.toLowerCase().contains(searchText.toLowerCase()))
             .toList();
       }
     });
