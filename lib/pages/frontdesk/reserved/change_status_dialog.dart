@@ -6,12 +6,14 @@ class ChangeStatusDialog extends StatefulWidget {
   final String roomNumber;
   final String roomType;
   final int roomId;
+  final Function(bool) onUpdateStatus;
 
   const ChangeStatusDialog({
     Key? key,
     required this.roomId,
     required this.roomNumber,
     required this.roomType,
+    required this.onUpdateStatus,
   }) : super(key: key);
 
   @override
@@ -32,38 +34,54 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
   ];
 
   Future<void> _updateRoomStatus() async {
+    if (_selectedStatus.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a status')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    final response = await http.put(
-      Uri.parse('http://localhost:8000/api/kamar/r-status/${widget.roomId}'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'status_reservasi':
-            _selectedStatus.toLowerCase(), // Convert to lowercase
-      }),
-    );
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Room status updated successfully')),
+    final url = 'http://localhost:8000/api/kamar/r-status/${widget.roomId}';
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'status_reservasi':
+              _selectedStatus.toLowerCase(), // Convert to lowercase
+        }),
       );
 
-      _selectedStatus = ''; // Reset selected status
+      setState(() {
+        _isLoading = false;
+      });
 
-      Navigator.of(context).pop(true); // Close dialog after showing snackbar
-    } else {
+      if (response.statusCode == 200) {
+        widget.onUpdateStatus(true);
+        Navigator.of(context).pop(); // Close the dialog first
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Room status updated successfully')),
+        );
+      } else {
+        widget.onUpdateStatus(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update room status')),
+        );
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      widget.onUpdateStatus(false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update room status')),
+        SnackBar(content: Text('An error occurred: $error')),
       );
-      Navigator.of(context).pop(false);
     }
   }
 
@@ -134,15 +152,7 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  if (_selectedStatus.isNotEmpty) {
-                    _updateRoomStatus();
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please select a status')),
-                    );
-                  }
-                },
+                onPressed: _updateRoomStatus,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purpleAccent,
                   minimumSize: Size(double.maxFinite, 50),

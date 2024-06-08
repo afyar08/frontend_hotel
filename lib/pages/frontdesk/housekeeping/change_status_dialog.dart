@@ -6,12 +6,14 @@ class ChangeStatusDialog extends StatefulWidget {
   final String roomNumber;
   final String roomType;
   final int roomId;
+  final Function(bool) onUpdateStatus;
 
   const ChangeStatusDialog({
     Key? key,
     required this.roomId,
     required this.roomNumber,
     required this.roomType,
+    required this.onUpdateStatus,
   }) : super(key: key);
 
   @override
@@ -36,30 +38,49 @@ class _ChangeStatusDialogState extends State<ChangeStatusDialog> {
       _isLoading = true;
     });
 
-    final response = await http.put(
-      Uri.parse('http://localhost:8000/api/kamar/status/${widget.roomId}'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'status_kamar': _selectedStatus.toLowerCase(), // Convert to lowercase
-      }),
-    );
+    String url;
+    Map<String, dynamic> requestBody;
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Room status updated successfully')),
-      );
-      Navigator.of(context).pop(true); // Return true to indicate success
+    // Tentukan URL dan requestBody berdasarkan status yang dipilih
+    if (_selectedStatus.toLowerCase().contains('out of order')) {
+      url = 'http://localhost:8000/api/kamar/out-of-order/${widget.roomId}';
+      requestBody = {};
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update room status')),
+      url = 'http://localhost:8000/api/kamar/status/${widget.roomId}';
+      requestBody = {'status_kamar': _selectedStatus.toLowerCase()};
+    }
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
       );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        // Panggil fungsi callback onUpdateStatus dengan true untuk sukses
+        widget.onUpdateStatus(true);
+        Navigator.of(context).pop(true);
+      } else {
+        // Panggil fungsi callback onUpdateStatus dengan false untuk kegagalan
+        widget.onUpdateStatus(false);
+        Navigator.of(context).pop(false);
+      }
+    } catch (error) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Panggil fungsi callback onUpdateStatus dengan false untuk kegagalan
+      widget.onUpdateStatus(false);
       Navigator.of(context).pop(false);
+      // Tampilkan pesan kesalahan kepada pengguna jika terjadi kesalahan
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $error')),
+      );
     }
   }
 
