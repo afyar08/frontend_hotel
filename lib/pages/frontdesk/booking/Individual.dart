@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontend_hotel/pages/frontdesk/booking/summary.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class IndividualBooking extends StatefulWidget {
   const IndividualBooking({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class IndividualBooking extends StatefulWidget {
 class _IndividualBookingState extends State<IndividualBooking> {
   final _formKey = GlobalKey<FormState>();
 
-  String? _selectedOption;
+  String? _selectedReservationBy;
   DateTimeRange? _selectedDateRange;
   String? _selectedRoomType;
   String? _selectedSize;
@@ -30,6 +32,70 @@ class _IndividualBookingState extends State<IndividualBooking> {
   String? _selectedPaymentType;
   String? _selectedBank;
   String _cardNumber = '';
+
+  Future<void> createReservation() async {
+    if (_selectedDateRange == null ||
+        _selectedReservationBy == null ||
+        _selectedRoomPlan == null ||
+        _selectedAdults == null ||
+        _selectedTitle == null ||
+        _selectedPaymentType == null ||
+        _firstName.isEmpty ||
+        _lastName.isEmpty ||
+        _email.isEmpty ||
+        _phoneNumber.isEmpty) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all the required fields')),
+      );
+      return;
+    }
+
+    final url = Uri.parse('http://localhost:8000/api/reservations');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'first_name': _firstName,
+        'last_name': _lastName,
+        'email': _email,
+        'phone_number': _phoneNumber,
+        'title': _selectedTitle,
+        'tgl_check_in': DateFormat('yyyy-MM-dd').format(_selectedDateRange!.start),
+        'tgl_check_out': DateFormat('yyyy-MM-dd').format(_selectedDateRange!.end),
+        'detail_tamu': 'Some detail', // Add actual details
+        'pembayaran': 'Credit Card', // Add actual payment method
+        'total_bayar': 100.0, // Add actual total amount
+        'status_pembayaran': 'Pending', // Add actual payment status
+        'id_kamar': 1, // Add actual room ID
+        'room_plan': _selectedRoomPlan,
+        'request': _request,
+        'reservation_by': _selectedReservationBy,
+        'duration': _selectedDateRange!.duration.inDays,
+        'room_total': 1, // Add actual room total
+        'adult': int.parse(_selectedAdults!.split(' ')[0]),
+        'children': _selectedChildren != 'No Children' ? int.parse(_selectedChildren!.split(' ')[0]) : 0,
+        'extra': 0.0, // Add actual extra charge if any
+        'sub_total': 100.0, // Add actual sub total
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // Reservation created successfully
+      print('Reservation created successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Reservation created successfully')),
+      );
+    } else {
+      // Error occurred
+      print('Failed to create reservation');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create reservation')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +137,25 @@ class _IndividualBookingState extends State<IndividualBooking> {
                 children: [
                   SizedBox(height: 20),
                   _buildDropdown(),
+                  ElevatedButton(
+                    onPressed: createReservation,
+                    child: Container(
+                      child: Text(
+                        'Booking',
+                        style: TextStyle(
+                          fontFamily: 'Jakarta',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      padding: EdgeInsets.fromLTRB(100, 20, 100, 20),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF4C4DDC),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -103,7 +188,7 @@ class _IndividualBookingState extends State<IndividualBooking> {
             padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             decoration: _containerDecoration(),
             child: DropdownButtonFormField<String>(
-              value: _selectedOption,
+              value: _selectedReservationBy,
               hint: Text('Reservation by'),
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -119,7 +204,7 @@ class _IndividualBookingState extends State<IndividualBooking> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  _selectedOption = newValue!;
+                  _selectedReservationBy = newValue!;
                 });
               },
               isExpanded: true,
@@ -151,8 +236,8 @@ class _IndividualBookingState extends State<IndividualBooking> {
                     builder: (context) => AlertDialog(
                       title: Text('Selected Dates'),
                       content: Text(
-                        'Check-in: ${pickedDateRange.start}\n'
-                        'Check-out: ${pickedDateRange.end}\n'
+                        'Check-in: ${DateFormat('yyyy-MM-dd').format(_selectedDateRange!.start)}\n'
+                        'Check-out: ${DateFormat('yyyy-MM-dd').format(_selectedDateRange!.end)}\n'
                         'Duration: ${pickedDateRange.duration.inDays} days',
                       ),
                       actions: [
@@ -173,11 +258,11 @@ class _IndividualBookingState extends State<IndividualBooking> {
         if (_selectedDateRange != null) ...[
           SizedBox(height: 10),
           Text(
-            'Check-in: ${_selectedDateRange!.start}',
+            'Check-in: ${DateFormat('yyyy-MM-dd').format(_selectedDateRange!.start)}',
             style: TextStyle(fontSize: 16),
           ),
           Text(
-            'Check-out: ${_selectedDateRange!.end}',
+            'Check-out: ${DateFormat('yyyy-MM-dd').format(_selectedDateRange!.end)}',
             style: TextStyle(fontSize: 16),
           ),
           Text(
@@ -201,8 +286,8 @@ class _IndividualBookingState extends State<IndividualBooking> {
                       border: InputBorder.none,
                     ),
                     items: <String>[
-                      'Single',
-                      'Double',
+                      'Standard',
+                      'Deluxe',
                       'Suite',
                     ].map((String value) {
                       return DropdownMenuItem<String>(
@@ -220,28 +305,21 @@ class _IndividualBookingState extends State<IndividualBooking> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
-          ],
-        ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
             Expanded(
               child: ListTile(
                 title: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                   decoration: _containerDecoration(),
                   child: DropdownButtonFormField<String>(
-                    value: _selectedRoomNumber,
-                    hint: Text('Room number'),
+                    value: _selectedSize,
+                    hint: Text('Size'),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                     ),
                     items: <String>[
-                      '101',
-                      '102',
-                      '103',
+                      'Single',
+                      'Double',
+                      'Family',
                     ].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -250,39 +328,7 @@ class _IndividualBookingState extends State<IndividualBooking> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        _selectedRoomNumber = newValue!;
-                      });
-                    },
-                    isExpanded: true,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ListTile(
-                title: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: _containerDecoration(),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedRoomPlan,
-                    hint: Text('Room plan'),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                    items: <String>[
-                      'Standard',
-                      'Deluxe',
-                      'Premium',
-                    ].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedRoomPlan = newValue!;
+                        _selectedSize = newValue!;
                       });
                     },
                     isExpanded: true,
@@ -292,7 +338,64 @@ class _IndividualBookingState extends State<IndividualBooking> {
             ),
           ],
         ),
-        SizedBox(height: 10),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            decoration: _containerDecoration(),
+            child: DropdownButtonFormField<String>(
+              value: _selectedRoomNumber,
+              hint: Text('Room number'),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+              ),
+              items: <String>[
+                '101',
+                '102',
+                '103',
+              ].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRoomNumber = newValue!;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+        ),
+        ListTile(
+          title: Container(
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            decoration: _containerDecoration(),
+            child: DropdownButtonFormField<String>(
+              value: _selectedRoomPlan,
+              hint: Text('Room plan'),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+              ),
+              items: <String>[
+                'Room Only',
+                'Bed and Breakfast',
+                'Half Board',
+              ].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRoomPlan = newValue!;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -327,7 +430,6 @@ class _IndividualBookingState extends State<IndividualBooking> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
             Expanded(
               child: ListTile(
                 title: Container(
@@ -362,253 +464,106 @@ class _IndividualBookingState extends State<IndividualBooking> {
           ],
         ),
         SizedBox(height: 10),
-        ListTile(
-          title: Text(
-            'Guest Detail',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        _buildTextInput('First Name', onChanged: (value) {
+          _firstName = value;
+        }),
+        _buildTextInput('Last Name', onChanged: (value) {
+          _lastName = value;
+        }),
+        _buildDropdownFormField(
+          value: _selectedTitle,
+          hint: 'Title',
+          items: ['Mr', 'Ms', 'Mrs', 'Dr', 'Prof'],
+          onChanged: (newValue) {
+            setState(() {
+              _selectedTitle = newValue!;
+            });
+          },
         ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: DropdownButtonFormField<String>(
-              value: _selectedTitle,
-              hint: Text('Title'),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              items: <String>[
-                'Mr.',
-                'Ms.',
-                'Mrs.',
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedTitle = newValue!;
-                });
-              },
-              isExpanded: true,
-            ),
-          ),
+        _buildTextInput('Email', onChanged: (value) {
+          _email = value;
+        }),
+        _buildTextInput('Phone Number', onChanged: (value) {
+          _phoneNumber = value;
+        }),
+        _buildTextInput('Special Requests', onChanged: (value) {
+          _request = value;
+        }),
+        _buildDropdownFormField(
+          value: _selectedPaymentType,
+          hint: 'Payment Type',
+          items: ['Credit Card', 'Debit Card', 'Cash', 'Bank Transfer'],
+          onChanged: (newValue) {
+            setState(() {
+              _selectedPaymentType = newValue!;
+            });
+          },
         ),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'First Name',
-                border: InputBorder.none,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _firstName = value;
-                });
-              },
-            ),
+        if (_selectedPaymentType == 'Credit Card' || _selectedPaymentType == 'Debit Card') ...[
+          _buildDropdownFormField(
+            value: _selectedBank,
+            hint: 'Bank',
+            items: ['Bank A', 'Bank B', 'Bank C'],
+            onChanged: (newValue) {
+              setState(() {
+                _selectedBank = newValue!;
+              });
+            },
           ),
-        ),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Last Name',
-                border: InputBorder.none,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _lastName = value;
-                });
-              },
-            ),
-          ),
-        ),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Email',
-                border: InputBorder.none,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _email = value;
-                });
-              },
-            ),
-          ),
-        ),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Phone Number',
-                border: InputBorder.none,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _phoneNumber = value;
-                });
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Text(
-            'Special Request',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Request',
-                border: InputBorder.none,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _request = value;
-                });
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Text(
-            'Payment Detail',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: DropdownButtonFormField<String>(
-              value: _selectedPaymentType,
-              hint: Text('Payment Type'),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              items: <String>[
-                'Credit Card',
-                'Debit Card',
-                'Cash',
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedPaymentType = newValue!;
-                });
-              },
-              isExpanded: true,
-            ),
-          ),
-        ),
-        SizedBox(height: 10),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: DropdownButtonFormField<String>(
-              value: _selectedBank,
-              hint: Text('Bank'),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-              ),
-              items: <String>[
-                'Bank A',
-                'Bank B',
-                'Bank C',
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedBank = newValue!;
-                });
-              },
-              isExpanded: true,
-            ),
-          ),
-        ),
-        ListTile(
-          title: Container(
-            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            decoration: _containerDecoration(),
-            child: TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Card Number',
-                border: InputBorder.none,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _cardNumber = value;
-                });
-              },
-            ),
-          ),
-        ),
-        SizedBox(height: 20),
-        // ElevatedButton(
-        //   onPressed: () {
-        //     if (_formKey.currentState!.validate()) {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => Summary(
-        //           ),
-        //         ),
-        //       );
-        //     }
-        //   },
-        //   child: Text('Submit'),
-        // ),
+          _buildTextInput('Card Number', onChanged: (value) {
+            _cardNumber = value;
+          }, inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(16),
+          ]),
+        ],
       ],
     );
   }
-}
 
+  Widget _buildTextInput(String label, {required Function(String) onChanged, List<TextInputFormatter>? inputFormatters}) {
+    return ListTile(
+      title: Container(
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        decoration: _containerDecoration(),
+        child: TextFormField(
+          decoration: InputDecoration(
+            hintText: label,
+            border: InputBorder.none,
+          ),
+          onChanged: onChanged,
+          inputFormatters: inputFormatters,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownFormField({
+    String? value,
+    required String hint,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return ListTile(
+      title: Container(
+        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        decoration: _containerDecoration(),
+        child: DropdownButtonFormField<String>(
+          value: value,
+          hint: Text(hint),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+          ),
+          items: items.map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: onChanged,
+          isExpanded: true,
+        ),
+      ),
+    );
+  }
+}

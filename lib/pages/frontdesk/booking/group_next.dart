@@ -114,6 +114,7 @@ class _GroupNext extends State<GroupNext> {
                   _buildDropdown(),
                   SizedBox(height: 20),
                   _buildBookingButton(),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -206,7 +207,12 @@ class _GroupNext extends State<GroupNext> {
                   ),
                   child: CustomDropdown(
                     hintText: 'Select Children',
-                    items: ['1 Child', '2 Children', '3 Children', '4 Children'],
+                    items: [
+                      '1 Child',
+                      '2 Children',
+                      '3 Children',
+                      '4 Children'
+                    ],
                     controller: _childrenController,
                     onChanged: (value) {
                       setState(() {
