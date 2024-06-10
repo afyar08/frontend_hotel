@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hotel/pages/frontdesk/new_booking.dart';
 
 class DetailRoom extends StatefulWidget {
   final String roomName;
@@ -107,10 +108,10 @@ class _DetailRoomState extends State<DetailRoom> {
                     TextButton(
                   //buat next
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => ()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NewBooking()),
+                      );
                     },
                     child: Container(
                       alignment: Alignment.center,
