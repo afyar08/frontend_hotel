@@ -61,7 +61,7 @@ class _IndividualBookingState extends State<IndividualBooking> {
         'first_name': _firstName,
         'last_name': _lastName,
         'email': _email,
-        'no_telp': _phoneNumber,
+        'phone_number': _phoneNumber,
         'title': _selectedTitle,
         'tgl_check_in': DateFormat('yyyy-MM-dd').format(_selectedDateRange!.start),
         'tgl_check_out': DateFormat('yyyy-MM-dd').format(_selectedDateRange!.end),
@@ -70,7 +70,6 @@ class _IndividualBookingState extends State<IndividualBooking> {
         'total_bayar': 100.0, // Add actual total amount
         'status_pembayaran': 'Pending', // Add actual payment status
         'id_kamar': 1, // Add actual room ID
-        'id_resepsionis': 1, 
         'room_plan': _selectedRoomPlan,
         'request': _request,
         'reservation_by': _selectedReservationBy,
